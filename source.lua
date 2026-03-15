@@ -191,7 +191,7 @@ GlobalWindow.Parent = CoreGui;
 NeverLose.Scales = {
 	Small = UDim2.fromOffset(540,380),
 	Mobile = UDim2.fromOffset(640,385),
-	Default = UDim2.fromOffset(740 , 540),
+	Default = UDim2.fromOffset(720 , 520),
 	Large = UDim2.fromOffset(800 , 600)
 };
 
@@ -203,7 +203,7 @@ NeverLose.MainColor = Color3.fromRGB(8, 8, 13);
 NeverLose.RegisiteryColor = {};
 NeverLose.NameRegisitry = {};
 NeverLose.IsMosueOverOtherFrame = false;
-NeverLose.GlobalLogo = "rbxassetid://120358385035996";
+NeverLose.GlobalLogo = "rbxassetid://115922855794150";
 NeverLose.ImageColorMapping = "rbxassetid://4155801252";
 
 if getcustomasset then
