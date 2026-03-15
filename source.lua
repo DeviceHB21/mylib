@@ -191,7 +191,7 @@ GlobalWindow.Parent = CoreGui;
 NeverLose.Scales = {
 	Small = UDim2.fromOffset(540,380),
 	Mobile = UDim2.fromOffset(640,385),
-	Default = UDim2.fromOffset(640 , 480),
+	Default = UDim2.fromOffset(780 , 580),
 	Large = UDim2.fromOffset(800 , 600)
 };
 
