@@ -4162,7 +4162,7 @@ function NeverLose:CreateWindow(Config)
 	LeftMenuFrame.BackgroundTransparency = 1.000
 	LeftMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LeftMenuFrame.BorderSizePixel = 0
-	LeftMenuFrame.Size = UDim2.new(0, 145, 1, 0)
+	LeftMenuFrame.Size = UDim2.new(0, 165, 1, 0)
 
 	HeadFrame.Name = NeverLose.RandomString();
 	HeadFrame.Parent = LeftMenuFrame
@@ -4240,7 +4240,7 @@ function NeverLose:CreateWindow(Config)
 	LeftScrollingFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LeftScrollingFrame.BorderSizePixel = 0
 	LeftScrollingFrame.Position = UDim2.new(0.5, 0, 0, 60)
-	LeftScrollingFrame.Size = UDim2.new(1, -10, 1, -115)
+	LeftScrollingFrame.Size = UDim2.new(1, -6, 1, -115)
 	LeftScrollingFrame.ZIndex = 7
 	LeftScrollingFrame.ScrollBarThickness = 0
 
@@ -4357,8 +4357,8 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
-	RightMenuFrame.Position = UDim2.new(0, 176, 0, 0)
-	RightMenuFrame.Size = UDim2.new(1, -176, 1, 0)
+	RightMenuFrame.Position = UDim2.new(0, 166, 0, 0)
+	RightMenuFrame.Size = UDim2.new(1, -166, 1, 0)
 	RightMenuFrame.ZIndex = 8
 
 	UIStroke.Transparency = 0.650
@@ -4743,7 +4743,7 @@ function NeverLose:CreateWindow(Config)
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
-		TabButton.Size = UDim2.new(1, -1, 0, 22)
+		TabButton.Size = UDim2.new(1, -8, 0, 26)
 		TabButton.ZIndex = 8
 
 		UICorner.CornerRadius = UDim.new(0, 6)
