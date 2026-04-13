@@ -4743,7 +4743,7 @@ function NeverLose:CreateWindow(Config)
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
-		TabButton.Size = UDim2.new(1, -1, 0, 22)
+		TabButton.Size = UDim2.new(1, -1, 0, 36)
 		TabButton.ZIndex = 8
 
 		UICorner.CornerRadius = UDim.new(0, 6)
