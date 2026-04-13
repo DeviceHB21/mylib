@@ -4162,7 +4162,7 @@ function NeverLose:CreateWindow(Config)
 	LeftMenuFrame.BackgroundTransparency = 1.000
 	LeftMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LeftMenuFrame.BorderSizePixel = 0
-	LeftMenuFrame.Size = UDim2.new(0, 175, 1, 0)
+	LeftMenuFrame.Size = UDim2.new(0, 145, 1, 0)
 
 	HeadFrame.Name = NeverLose.RandomString();
 	HeadFrame.Parent = LeftMenuFrame
@@ -4743,7 +4743,7 @@ function NeverLose:CreateWindow(Config)
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
-		TabButton.Size = UDim2.new(1, -1, 0, 30)
+		TabButton.Size = UDim2.new(1, -1, 0, 22)
 		TabButton.ZIndex = 8
 
 		UICorner.CornerRadius = UDim.new(0, 6)
@@ -4815,7 +4815,7 @@ function NeverLose:CreateWindow(Config)
 		UIListLayout.Parent = LeftScroll
 		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-		UIListLayout.Padding = UDim.new(0, 5)
+		UIListLayout.Padding = UDim.new(0, 2)
 
 		NeverLose:AddSignal(UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(LPH_NO_VIRTUALIZE(function()
 			LeftScroll.CanvasSize = UDim2.fromOffset(0,UIListLayout.AbsoluteContentSize.Y + 1)
