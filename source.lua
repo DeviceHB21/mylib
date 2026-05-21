@@ -3921,7 +3921,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.BackgroundTransparency = 0
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
-	WindowFrame.ClipsDescendants = true
+	WindowFrame.ClipsDescendants = false
 	WindowFrame.Position = UDim2.new(255, 0, 255, 0)
 	WindowFrame.Size = Window.Size
 	WindowFrame.Active = true;
@@ -4381,7 +4381,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(7, 7, 7)
+	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(9, 9, 9)
 	RightMenuFrame.BackgroundTransparency = 0
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
@@ -5036,7 +5036,7 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.Name = NeverLose.RandomString();
 			SectionHandler.Parent = SectionFrame
 			SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
-			SectionHandler.BackgroundColor3 = Color3.fromRGB(7, 7, 7)
+			SectionHandler.BackgroundColor3 = Color3.fromRGB(9, 9, 9)
 			SectionHandler.BackgroundTransparency = 0
 			SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			SectionHandler.BorderSizePixel = 0
