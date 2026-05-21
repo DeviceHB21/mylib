@@ -2231,6 +2231,14 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				NeverLose.PlayAnimate(WindowStroke, SlowyTween, {
                     Transparency = 0.650
                 })
+				NeverLose.PlayAnimate(WindowFrame, SlowyTween, {
+    				BackgroundTransparency = 0,
+    				Size = Window.Size
+				})
+
+				NeverLose.PlayAnimate(RightMenuFrame, SlowyTween, {
+    				BackgroundTransparency = 0
+				})
 				NeverLose.PlayAnimate(Icon , SlowyTween , {
 					TextTransparency = 0.400
 				})
