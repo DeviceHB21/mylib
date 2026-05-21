@@ -198,7 +198,7 @@ NeverLose.Scales = {
 NeverLose.IconColor = Color3.fromRGB(255, 255, 255);
 NeverLose.ScreenGui = GlobalWindow;
 NeverLose.Flags = {};
-NeverLose.AccentColor = Color3.fromRGB(212, 210, 210);
+NeverLose.AccentColor = Color3.fromRGB(0, 98, 255);
 function NeverLose:SetAccentColor(color)
 	NeverLose.AccentColor = color;
 
@@ -213,7 +213,7 @@ function NeverLose:SetAccentColor(color)
 
 	NeverLose.AccentColor = color;
 end;
-NeverLose.MainColor = Color3.fromRGB(212, 210, 210);
+NeverLose.MainColor = Color3.fromRGB(0, 98, 255);
 NeverLose.RegisiteryColor = {};
 NeverLose.NameRegisitry = {};
 NeverLose.IsMosueOverOtherFrame = false;
@@ -1005,7 +1005,7 @@ NeverLose.ProcessParams = LPH_NO_VIRTUALIZE(function(self , Params , Fixed)
 	return k;
 end);
 
-NeverLose.EnabledBlur = true;
+NeverLose.EnabledBlur = false;
 NeverLose.BlurModuleParent = workspace.CurrentCamera;
 
 NeverLose.GetCalculatePosition = LPH_NO_VIRTUALIZE(function(planePos, planeNormal, rayOrigin, rayDirection)
@@ -3917,7 +3917,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.Name = NeverLose.RandomString();
 	WindowFrame.Parent = NeverLose.ScreenGui;
 	WindowFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-	WindowFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	WindowFrame.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
 	WindowFrame.BackgroundTransparency = 0
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
@@ -4366,7 +4366,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
+	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(16, 16, 16)
 	RightMenuFrame.BackgroundTransparency = 0
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
