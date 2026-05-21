@@ -1249,7 +1249,7 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	OptionHandler.Name = NeverLose.RandomString();
 	OptionHandler.Parent = NeverLose.ScreenGui
 	OptionHandler.AnchorPoint = Vector2.new(0, 0)
-	OptionHandler.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
+	OptionHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 	OptionHandler.BackgroundTransparency = 0.035
 	OptionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	OptionHandler.BorderSizePixel = 0
@@ -1384,7 +1384,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	ColorPickerHandler.Name = NeverLose.RandomString();
 	ColorPickerHandler.Parent = NeverLose.ScreenGui
 	ColorPickerHandler.AnchorPoint = Vector2.new(0, 0)
-	ColorPickerHandler.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
+	ColorPickerHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 	ColorPickerHandler.BackgroundTransparency = 0.035
 	ColorPickerHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ColorPickerHandler.BorderSizePixel = 0
@@ -1947,7 +1947,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		ValueLabel.TextSize = 10.000
 		ValueLabel.ClearTextOnFocus = false;
-		ValueLabel.TextTransparency = 0.350
+		ValueLabel.TextTransparency = 0
 
 		SlideMain.Name = NeverLose.RandomString();
 		SlideMain.Parent = Slider
@@ -2445,7 +2445,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		ValueLabel.Text = NeverLose:KeyCodeToStr(Config.Default or "None")
 		ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		ValueLabel.TextSize = 10.000
-		ValueLabel.TextTransparency = 0.500
+		ValueLabel.TextTransparency = 0
 
 		KeybindLib.SetRender = LPH_NO_VIRTUALIZE(function(value)
 			if value then
@@ -2705,7 +2705,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		DropdownIcon.Text = "chevron-small-down"
 		DropdownIcon.TextColor3 = Color3.fromRGB(223, 223, 223)
 		DropdownIcon.TextSize = 16.000
-		DropdownIcon.TextTransparency = 0.250
+		DropdownIcon.TextTransparency = 0
 		DropdownIcon.TextWrapped = true
 
 		UICorner.CornerRadius = UDim.new(0, 4)
@@ -2730,7 +2730,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		BasedLabel.Text = NeverLose.ParseDropdown(Config.Default);
 		BasedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		BasedLabel.TextSize = 12.000
-		BasedLabel.TextTransparency = 0.5
+		BasedLabel.TextTransparency = 0
 		BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		do
@@ -2809,7 +2809,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			DropdownHandler.Name = NeverLose.RandomString();
 			DropdownHandler.Parent = NeverLose.ScreenGui;
 			DropdownHandler.AnchorPoint = Vector2.new(0.5, 0)
-			DropdownHandler.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
+			DropdownHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 			DropdownHandler.BackgroundTransparency = 0.5
 			DropdownHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			DropdownHandler.BorderSizePixel = 0
@@ -3427,7 +3427,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		BasedLabel.Text = Name
 		BasedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		BasedLabel.TextSize = 13.000
-		BasedLabel.TextTransparency = 0.35
+		BasedLabel.TextTransparency = 0
 		BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		LineFrame.Name = NeverLose.RandomString();
@@ -3594,7 +3594,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		BasedLabel.Text = Config.Name;
 		BasedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		BasedLabel.TextSize = 13.000
-		BasedLabel.TextTransparency = 0.200
+		BasedLabel.TextTransparency = 0
 		BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		LineFrame.Name = NeverLose.RandomString();
@@ -4217,7 +4217,7 @@ function NeverLose:CreateWindow(Config)
 	WindowContent.Text = Window.Content
 	WindowContent.TextColor3 = Color3.fromRGB(255, 255, 255)
 	WindowContent.TextSize = 9.000
-	WindowContent.TextTransparency = 0.650
+	WindowContent.TextTransparency = 0
 	WindowContent.TextXAlignment = Enum.TextXAlignment.Left
 
 	LineFrame.Name = NeverLose.RandomString();
@@ -4308,7 +4308,7 @@ function NeverLose:CreateWindow(Config)
 	ExpireLabel.Text = "never"
 	ExpireLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	ExpireLabel.TextSize = 10.000
-	ExpireLabel.TextTransparency = 0.650
+	ExpireLabel.TextTransparency = 0
 	ExpireLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 	LineFrame_2.Name = NeverLose.RandomString();
@@ -4336,7 +4336,7 @@ function NeverLose:CreateWindow(Config)
 	UserSettingButton.Text = "chevron-large-right"
 	UserSettingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 	UserSettingButton.TextSize = 13.000
-	UserSettingButton.TextTransparency = 0.5
+	UserSettingButton.TextTransparency = 0
 
 	NeverLose:AddSignal(BottomFrame.MouseEnter:Connect(LPH_NO_VIRTUALIZE(function()
 		NeverLose.PlayAnimate(UserSettingButton,SlowyTween , {
@@ -4352,7 +4352,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 13)
+	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
 	RightMenuFrame.BackgroundTransparency = 0.600
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
@@ -5007,7 +5007,7 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.Name = NeverLose.RandomString();
 			SectionHandler.Parent = SectionFrame
 			SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
-			SectionHandler.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
+			SectionHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 			SectionHandler.BackgroundTransparency = 0.500
 			SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			SectionHandler.BorderSizePixel = 0
@@ -5245,7 +5245,7 @@ function NeverLose:CreateWindow(Config)
 		BasedLabel.Text = "Config"
 		BasedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		BasedLabel.TextSize = 13.000
-		BasedLabel.TextTransparency = 0.200
+		BasedLabel.TextTransparency = 0
 		BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		LineFrame.Name = NeverLose.RandomString();
@@ -5573,7 +5573,7 @@ function NeverLose:CreateWindow(Config)
 				BasedLabel.Text = ConfigNameStr
 				BasedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 				BasedLabel.TextSize = 13.000
-				BasedLabel.TextTransparency = 0.200
+				BasedLabel.TextTransparency = 0
 				BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 				UIStroke.Transparency = 0.500
@@ -5981,7 +5981,7 @@ function NeverLose:CreateWindow(Config)
 			Content.Text = Name
 			Content.TextColor3 = Color3.fromRGB(186, 186, 186)
 			Content.TextSize = 15.000
-			Content.TextTransparency = 0.200
+			Content.TextTransparency = 0
 			Content.TextXAlignment = Enum.TextXAlignment.Left
 
 			Icon.Name = NeverLose.RandomString();
