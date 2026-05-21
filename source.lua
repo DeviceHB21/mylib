@@ -2228,24 +2228,10 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		Window.SetRender = LPH_NO_VIRTUALIZE(function(value)
 			if value then
-				NeverLose.PlayAnimate(WindowStroke, SlowyTween, {
-                    Transparency = 0.650
-                })
-				NeverLose.PlayAnimate(WindowFrame, SlowyTween, {
-    				BackgroundTransparency = 0,
-    				Size = Window.Size
-				})
-
-				NeverLose.PlayAnimate(RightMenuFrame, SlowyTween, {
-    				BackgroundTransparency = 0
-				})
 				NeverLose.PlayAnimate(Icon , SlowyTween , {
 					TextTransparency = 0.400
 				})
 			else
-				NeverLose.PlayAnimate(WindowStroke, SlowyTween, {
-    				Transparency = 1
-				})
 				NeverLose.PlayAnimate(Icon , SlowyTween , {
 					TextTransparency = 1
 				})
@@ -3980,6 +3966,11 @@ function NeverLose:CreateWindow(Config)
 				Size = Window.Size
 			})
 
+			if WindowStroke then
+    			NeverLose.PlayAnimate(WindowStroke, SlowyTween, {
+        			Transparency = 0.650
+    			})
+			end
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 0
 			})
@@ -4068,6 +4059,12 @@ function NeverLose:CreateWindow(Config)
 				Size = Window.Size + UDim2.fromOffset(-15,-15)
 			})
 
+			if WindowStroke then
+    			NeverLose.PlayAnimate(WindowStroke, SlowyTween, {
+        			Transparency = 1
+    			})
+			end
+				
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 1
 			})
