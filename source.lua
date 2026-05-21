@@ -199,6 +199,20 @@ NeverLose.IconColor = Color3.fromRGB(255, 255, 255);
 NeverLose.ScreenGui = GlobalWindow;
 NeverLose.Flags = {};
 NeverLose.AccentColor = Color3.fromRGB(212, 210, 210);
+function NeverLose:SetAccentColor(color)
+	NeverLose.AccentColor = color;
+
+	for _, obj in next, NeverLose.ScreenGui:GetDescendants() do
+		if obj:IsA("TextLabel") and obj.TextColor3 == NeverLose.AccentColor then
+			obj.TextColor3 = color;
+		end;
+		if obj:IsA("Frame") and obj.BackgroundColor3 == NeverLose.AccentColor then
+			obj.BackgroundColor3 = color;
+		end;
+	end;
+
+	NeverLose.AccentColor = color;
+end;
 NeverLose.MainColor = Color3.fromRGB(212, 210, 210);
 NeverLose.RegisiteryColor = {};
 NeverLose.NameRegisitry = {};
