@@ -1263,8 +1263,8 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	OptionHandler.Name = NeverLose.RandomString();
 	OptionHandler.Parent = NeverLose.ScreenGui
 	OptionHandler.AnchorPoint = Vector2.new(0, 0)
-	OptionHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-	OptionHandler.BackgroundTransparency = 0.035
+	OptionHandler.BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+	OptionHandler.BackgroundTransparency = 0
 	OptionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	OptionHandler.BorderSizePixel = 0
 	OptionHandler.ClipsDescendants = true
@@ -1398,8 +1398,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	ColorPickerHandler.Name = NeverLose.RandomString();
 	ColorPickerHandler.Parent = NeverLose.ScreenGui
 	ColorPickerHandler.AnchorPoint = Vector2.new(0, 0)
-	ColorPickerHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-	ColorPickerHandler.BackgroundTransparency = 0.035
+	ColorPickerHandler.BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+	ColorPickerHandler.BackgroundTransparency = 0
 	ColorPickerHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ColorPickerHandler.BorderSizePixel = 0
 	ColorPickerHandler.ClipsDescendants = true
@@ -2823,8 +2823,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			DropdownHandler.Name = NeverLose.RandomString();
 			DropdownHandler.Parent = NeverLose.ScreenGui;
 			DropdownHandler.AnchorPoint = Vector2.new(0.5, 0)
-			DropdownHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-			DropdownHandler.BackgroundTransparency = 0.5
+			DropdownHandler.BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+			DropdownHandler.BackgroundTransparency = 0
 			DropdownHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			DropdownHandler.BorderSizePixel = 0
 			DropdownHandler.ClipsDescendants = true
@@ -3917,7 +3917,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.Name = NeverLose.RandomString();
 	WindowFrame.Parent = NeverLose.ScreenGui;
 	WindowFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-	WindowFrame.BackgroundColor3 = Color3.fromRGB(4, 4, 4)
+	WindowFrame.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
 	WindowFrame.BackgroundTransparency = 0
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
@@ -4365,7 +4365,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(6, 6, 6)
+	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(16, 16, 16)
 	RightMenuFrame.BackgroundTransparency = 0
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
@@ -5020,8 +5020,8 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.Name = NeverLose.RandomString();
 			SectionHandler.Parent = SectionFrame
 			SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
-			SectionHandler.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
-			SectionHandler.BackgroundTransparency = 0.500
+			SectionHandler.BackgroundColor3 = Color3.fromRGB(19, 19, 19)
+			SectionHandler.BackgroundTransparency = 0
 			SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			SectionHandler.BorderSizePixel = 0
 			SectionHandler.ClipsDescendants = true
