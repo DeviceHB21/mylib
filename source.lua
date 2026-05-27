@@ -3917,7 +3917,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.Name = NeverLose.RandomString();
 	WindowFrame.Parent = NeverLose.ScreenGui;
 	WindowFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-	WindowFrame.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
+	WindowFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
 	WindowFrame.BackgroundTransparency = 0
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
@@ -4381,7 +4381,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(9, 9, 9)
+	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
 	RightMenuFrame.BackgroundTransparency = 0
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
