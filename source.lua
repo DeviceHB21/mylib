@@ -6565,7 +6565,7 @@ function NeverLose:CreateWindow(Config)
 	Window:SetRender(false);
 
 	return Window;
-end;
+end)));
 
 function NeverLose:CreateNotification()
 	if NeverLose.__Notification_Cache then
@@ -7131,7 +7131,5 @@ function NeverLose:Unload()
 		pcall(v.Disconnect,v)
 	end;
 end;
-
-end)))
 
 return NeverLose;
