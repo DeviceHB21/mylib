@@ -7132,4 +7132,6 @@ function NeverLose:Unload()
 	end;
 end;
 
+end)))
+
 return NeverLose;
