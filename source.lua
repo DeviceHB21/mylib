@@ -3851,6 +3851,16 @@ function idx:AddPlayerPreview(Config)
     local height = Config.Height or 150
     local meshId = "rbxassetid://2727038386"
 
+    -- ============================================================
+    -- ESP SOURCE
+    -- Передай сюди свій Cheat:
+    -- window:AddPlayerPreview({ Height = 150, ESP = Cheat })
+    -- ============================================================
+    local ESP = Config.ESP
+
+    -- ============================================================
+    -- CONTAINER
+    -- ============================================================
     local Container = Instance.new("Frame")
     Container.Name = NeverLose.RandomString()
     Container.Parent = Frame
@@ -3871,18 +3881,16 @@ function idx:AddPlayerPreview(Config)
     ContStroke.Transparency = 0.5
     ContStroke.Parent = Container
 
-    ------------------------------------------------------------
+    -- ============================================================
     -- VIEWPORT
-    ------------------------------------------------------------
-
+    -- ============================================================
     local VF = Instance.new("ViewportFrame")
     VF.Name = NeverLose.RandomString()
     VF.Parent = Container
-    VF.Size = UDim2.new(1, 0, 1, 0)
+    VF.Size = UDim2.fromScale(1, 1)
     VF.BackgroundTransparency = 1
     VF.BorderSizePixel = 0
     VF.ZIndex = LayerIndex + 9
-    VF.Active = true
     VF.LightColor = Color3.fromRGB(235, 235, 235)
     VF.Ambient = Color3.fromRGB(150, 150, 150)
     VF.LightDirection = Vector3.new(-1, -2, -1)
@@ -3894,10 +3902,10 @@ function idx:AddPlayerPreview(Config)
     local WorldModel = Instance.new("WorldModel")
     WorldModel.Parent = VF
 
-    ------------------------------------------------------------
-    -- CHARACTER
-    ------------------------------------------------------------
-
+    -- ============================================================
+    -- CHARACTER MESH
+    -- Менший і довший, щоб не займав весь Preview.
+    -- ============================================================
     local CharModel = Instance.new("Model")
     CharModel.Parent = WorldModel
 
@@ -3907,7 +3915,7 @@ function idx:AddPlayerPreview(Config)
     CharPart.CanCollide = false
     CharPart.CastShadow = false
     CharPart.Size = Vector3.new(1, 1, 1)
-    CharPart.Color = Config.MeshColor or Color3.fromRGB(210, 210, 210)
+    CharPart.Color = Color3.fromRGB(210, 210, 210)
     CharPart.Material = Enum.Material.SmoothPlastic
     CharPart.TopSurface = Enum.SurfaceType.Smooth
     CharPart.BottomSurface = Enum.SurfaceType.Smooth
@@ -3917,18 +3925,14 @@ function idx:AddPlayerPreview(Config)
     local CharMesh = Instance.new("SpecialMesh")
     CharMesh.MeshType = Enum.MeshType.FileMesh
     CharMesh.MeshId = meshId
-
-    -- ТОНШИЙ + ДОВШИЙ
-    CharMesh.Scale = Vector3.new(3.2, 5.8, 3.2)
-
+    CharMesh.Scale = Vector3.new(1.5, 1.5, 1.5)
     CharMesh.Parent = CharPart
 
     CharModel.PrimaryPart = CharPart
 
-    ------------------------------------------------------------
+    -- ============================================================
     -- PLATFORM
-    ------------------------------------------------------------
-
+    -- ============================================================
     local Platform = Instance.new("Part")
     Platform.Name = "Platform"
     Platform.Anchored = true
@@ -3937,23 +3941,21 @@ function idx:AddPlayerPreview(Config)
     Platform.Size = Vector3.new(3, 0.1, 3)
     Platform.Color = Color3.fromRGB(35, 37, 48)
     Platform.Material = Enum.Material.SmoothPlastic
-    Platform.CFrame = CFrame.new(0, -2.6, 0)
+    Platform.CFrame = CFrame.new(0, -1.75, 0)
     Platform.Parent = WorldModel
 
-    local PlatCorner = Instance.new("CylinderMesh")
-    PlatCorner.Parent = Platform
+    local PlatMesh = Instance.new("CylinderMesh")
+    PlatMesh.Parent = Platform
 
-    ------------------------------------------------------------
-    -- CAMERA
-    ------------------------------------------------------------
-
+    -- ============================================================
+    -- CAMERA / ROTATION
+    -- ============================================================
     local rotY = 0
-    local camDst = 7
-    local camH = 0.5
+    local camDst = 8.5
+    local camH = 0.45
 
     local function applyCamera()
         local rad = math.rad(rotY)
-
         local cx = math.sin(rad) * camDst
         local cz = math.cos(rad) * camDst
 
@@ -3965,234 +3967,325 @@ function idx:AddPlayerPreview(Config)
 
     applyCamera()
 
-    ------------------------------------------------------------
-    -- ROTATION
-    -- ТЕПЕР КРУТИТЬСЯ ВЕСЬ CONTAINER
-    ------------------------------------------------------------
-
     local dragging = false
     local lastMouseX = 0
 
-    local function beginDrag(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
-
+    -- Вся область Preview обертає персонажа.
+    NeverLose:AddSignal(Container.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1
+        or inp.UserInputType == Enum.UserInputType.Touch then
             dragging = true
-            lastMouseX = input.Position.X
+            lastMouseX = inp.Position.X
         end
-    end
+    end))
 
-    local function endDrag(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
-
+    NeverLose:AddSignal(Container.InputEnded:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1
+        or inp.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
-    end
+    end))
 
-    -- Весь preview реагує на натискання
-    NeverLose:AddSignal(Container.InputBegan:Connect(beginDrag))
-    NeverLose:AddSignal(Container.InputEnded:Connect(endDrag))
+    NeverLose:AddSignal(UserInputService.InputChanged:Connect(function(inp)
+        if not dragging then
+            return
+        end
 
-    NeverLose:AddSignal(
-        UserInputService.InputChanged:Connect(function(input)
-            if not dragging then
-                return
-            end
+        if inp.UserInputType == Enum.UserInputType.MouseMovement
+        or inp.UserInputType == Enum.UserInputType.Touch then
+            local delta = inp.Position.X - lastMouseX
+            rotY = rotY + delta * 0.6
+            lastMouseX = inp.Position.X
+            applyCamera()
+        end
+    end))
 
-            if input.UserInputType == Enum.UserInputType.MouseMovement
-            or input.UserInputType == Enum.UserInputType.Touch then
+    local autoSpin = true
 
-                local delta = input.Position.X - lastMouseX
-
-                rotY = rotY + delta * 0.6
-                lastMouseX = input.Position.X
-
-                applyCamera()
-            end
-        end)
-    )
-
-    ------------------------------------------------------------
-    -- AUTO ROTATION
-    ------------------------------------------------------------
-
-    local autoSpin = Config.AutoSpin ~= false
-
-    NeverLose:AddSignal(
-        RunService.RenderStepped:Connect(function(dt)
-            if not Container.Visible then
-                return
-            end
-
-            if not dragging and autoSpin then
-                rotY = rotY + dt * 22
-                applyCamera()
-            end
-        end)
-    )
-
-    ------------------------------------------------------------
+    -- ============================================================
     -- ESP LAYER
-    ------------------------------------------------------------
-
+    -- ============================================================
     local ESPLayer = Instance.new("Frame")
     ESPLayer.Name = NeverLose.RandomString()
     ESPLayer.Parent = Container
     ESPLayer.BackgroundTransparency = 1
     ESPLayer.BorderSizePixel = 0
-    ESPLayer.Size = UDim2.new(1, 0, 1, 0)
+    ESPLayer.Size = UDim2.fromScale(1, 1)
     ESPLayer.ZIndex = LayerIndex + 12
-    ESPLayer.Active = false
 
-    ------------------------------------------------------------
+    -- ============================================================
     -- BOX
-    ------------------------------------------------------------
+    -- Точна структура твого ESP:
+    -- Outer -> Main -> Inner
+    -- ============================================================
+    local boxW, boxH = 48, 92
 
-    local boxW = Config.BoxWidth or 52
-    local boxH = Config.BoxHeight or 92
+    local function createBoxPart(name, thickness)
+        local frame = Instance.new("Frame")
+        frame.Name = name
+        frame.AnchorPoint = Vector2.new(0.5, 0.5)
+        frame.Position = UDim2.new(0.5, 0, 0.48, 0)
+        frame.Size = UDim2.fromOffset(boxW, boxH)
+        frame.BackgroundTransparency = 1
+        frame.BorderSizePixel = 0
+        frame.ZIndex = LayerIndex + 13
+        frame.Parent = ESPLayer
 
-    local BoxFrame = Instance.new("Frame")
-    BoxFrame.Name = NeverLose.RandomString()
-    BoxFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    BoxFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    BoxFrame.Size = UDim2.fromOffset(boxW, boxH)
-    BoxFrame.BackgroundTransparency = 1
-    BoxFrame.BorderSizePixel = 0
-    BoxFrame.Visible = Config.Box or false
-    BoxFrame.ZIndex = LayerIndex + 13
-    BoxFrame.Parent = ESPLayer
+        local stroke = Instance.new("UIStroke")
+        stroke.Thickness = thickness
+        stroke.Parent = frame
 
-    local BoxStroke = Instance.new("UIStroke")
-    BoxStroke.Color = Config.BoxColor or Color3.fromRGB(255, 255, 255)
-    BoxStroke.Thickness = 1.5
-    BoxStroke.Parent = BoxFrame
+        return frame, stroke
+    end
 
-    ------------------------------------------------------------
-    -- HEALTH
-    ------------------------------------------------------------
+    local Outer, OuterStroke = createBoxPart("Outer", 1)
+    local Main, MainStroke = createBoxPart("Main", 1)
+    local Inner, InnerStroke = createBoxPart("Inner", 1)
 
+    -- ============================================================
+    -- CORNERS
+    -- ============================================================
+    local CornerFrames = {}
+
+    local function createCorner(sizeX, sizeY, posX, posY)
+        local f = Instance.new("Frame")
+        f.BackgroundTransparency = 1
+        f.BorderSizePixel = 0
+        f.Size = UDim2.fromOffset(sizeX, sizeY)
+        f.Position = UDim2.fromOffset(posX, posY)
+        f.ZIndex = LayerIndex + 14
+        f.Parent = ESPLayer
+
+        local s = Instance.new("UIStroke")
+        s.Thickness = 1
+        s.Parent = f
+
+        return f, s
+    end
+
+    -- Замість складних окремих ліній використовуємо 8 маленьких
+    -- Frame-частин, щоб Corners виглядали як Boxes з реального ESP.
+    local cornerParts = {}
+
+    local function addCornerPart(name, pos, size)
+        local f = Instance.new("Frame")
+        f.Name = name
+        f.BackgroundColor3 = Color3.new(1, 1, 1)
+        f.BorderSizePixel = 0
+        f.Position = pos
+        f.Size = size
+        f.ZIndex = LayerIndex + 14
+        f.Parent = ESPLayer
+        table.insert(cornerParts, f)
+        return f
+    end
+
+    local function updateCorners()
+        local x = 0.5
+        local y = 0.48
+        local l = x - boxW / 2
+        local r = x + boxW / 2
+        local t = y - boxH / 2
+        local b = y + boxH / 2
+        local cw = 12
+        local ch = 12
+        local th = 1
+
+        cornerParts[1].Position = UDim2.new(l, 0, t, 0)
+        cornerParts[1].Size = UDim2.fromOffset(cw, th)
+        cornerParts[2].Position = UDim2.new(l, 0, t, 0)
+        cornerParts[2].Size = UDim2.fromOffset(th, ch)
+
+        cornerParts[3].Position = UDim2.new(r, -cw, t, 0)
+        cornerParts[3].Size = UDim2.fromOffset(cw, th)
+        cornerParts[4].Position = UDim2.new(r, -th, t, 0)
+        cornerParts[4].Size = UDim2.fromOffset(th, ch)
+
+        cornerParts[5].Position = UDim2.new(l, 0, b, -th)
+        cornerParts[5].Size = UDim2.fromOffset(cw, th)
+        cornerParts[6].Position = UDim2.new(l, 0, b, -ch)
+        cornerParts[6].Size = UDim2.fromOffset(th, ch)
+
+        cornerParts[7].Position = UDim2.new(r, -cw, b, -th)
+        cornerParts[7].Size = UDim2.fromOffset(cw, th)
+        cornerParts[8].Position = UDim2.new(r, -th, b, -ch)
+        cornerParts[8].Size = UDim2.fromOffset(th, ch)
+    end
+
+    for i = 1, 8 do
+        addCornerPart("Corner" .. i, UDim2.new(), UDim2.fromOffset(1, 1))
+    end
+    updateCorners()
+
+    -- ============================================================
+    -- FILL BOX
+    -- ============================================================
+    local FillBox = Instance.new("Frame")
+    FillBox.Name = "FillBox"
+    FillBox.AnchorPoint = Vector2.new(0.5, 0.5)
+    FillBox.Position = UDim2.new(0.5, 0, 0.48, 0)
+    FillBox.Size = UDim2.fromOffset(boxW, boxH)
+    FillBox.BorderSizePixel = 0
+    FillBox.ZIndex = LayerIndex + 12
+    FillBox.Parent = ESPLayer
+
+    -- ============================================================
+    -- HEALTH BAR
+    -- ============================================================
     local HpBg = Instance.new("Frame")
     HpBg.Name = NeverLose.RandomString()
     HpBg.AnchorPoint = Vector2.new(1, 0.5)
-    HpBg.Position = UDim2.new(0.5, -(boxW / 2) - 5, 0.5, 0)
-    HpBg.Size = UDim2.fromOffset(4, boxH)
-    HpBg.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+    HpBg.Position = UDim2.new(0.5, -(boxW / 2) - 5, 0.48, 0)
+    HpBg.Size = UDim2.fromOffset(2, boxH + 2)
+    HpBg.BackgroundColor3 = Color3.new(0, 0, 0)
     HpBg.BorderSizePixel = 0
-    HpBg.Visible = Config.Health or false
-    HpBg.ZIndex = LayerIndex + 13
+    HpBg.ZIndex = LayerIndex + 14
     HpBg.Parent = ESPLayer
 
-    Instance.new("UICorner", HpBg).CornerRadius = UDim.new(1, 0)
-
     local HpFill = Instance.new("Frame")
+    HpFill.Name = "HealthFill"
     HpFill.AnchorPoint = Vector2.new(0, 1)
     HpFill.Position = UDim2.new(0, 0, 1, 0)
     HpFill.Size = UDim2.new(1, 0, 1, 0)
-    HpFill.BackgroundColor3 =
-        Config.HealthColor or Color3.fromRGB(80, 210, 120)
     HpFill.BorderSizePixel = 0
-    HpFill.ZIndex = LayerIndex + 14
+    HpFill.ZIndex = LayerIndex + 15
     HpFill.Parent = HpBg
 
-    Instance.new("UICorner", HpFill).CornerRadius = UDim.new(1, 0)
+    local HpMask = Instance.new("Frame")
+    HpMask.Name = "HealthMask"
+    HpMask.AnchorPoint = Vector2.new(0, 0)
+    HpMask.Position = UDim2.new(0, 0, 0, 0)
+    HpMask.Size = UDim2.new(1, 0, 0, 0)
+    HpMask.BorderSizePixel = 0
+    HpMask.ZIndex = LayerIndex + 16
+    HpMask.Parent = HpBg
 
-    ------------------------------------------------------------
+    -- ============================================================
+    -- HEALTH TEXT
+    -- ============================================================
+    local HpText = Instance.new("TextLabel")
+    HpText.Name = NeverLose.RandomString()
+    HpText.BackgroundTransparency = 1
+    HpText.Text = "100"
+    HpText.TextSize = 10
+    HpText.FontFace = Font.fromEnum(Enum.Font.SourceSans)
+    HpText.TextStrokeTransparency = 0
+    HpText.TextStrokeColor3 = Color3.new(0, 0, 0)
+    HpText.TextXAlignment = Enum.TextXAlignment.Right
+    HpText.AnchorPoint = Vector2.new(1, 0.5)
+    HpText.Position = UDim2.new(0.5, -(boxW / 2) - 12, 0.48, 0)
+    HpText.Size = UDim2.fromOffset(18, 10)
+    HpText.ZIndex = LayerIndex + 17
+    HpText.Parent = ESPLayer
+
+    -- ============================================================
     -- NAME
-    ------------------------------------------------------------
-
+    -- ============================================================
     local NameLbl = Instance.new("TextLabel")
     NameLbl.Name = NeverLose.RandomString()
     NameLbl.AnchorPoint = Vector2.new(0.5, 1)
-    NameLbl.Position =
-        UDim2.new(0.5, 0, 0.5, -(boxH / 2) - 4)
-    NameLbl.Size = UDim2.fromOffset(130, 16)
+    NameLbl.Position = UDim2.new(0.5, 0, 0.48, -(boxH / 2) - 2)
+    NameLbl.Size = UDim2.fromOffset(130, 14)
     NameLbl.BackgroundTransparency = 1
     NameLbl.BorderSizePixel = 0
-    NameLbl.Text = Config.NameText or "ESP Preview"
-    NameLbl.TextColor3 =
-        Config.NameColor or Color3.fromRGB(255, 255, 255)
-    NameLbl.Font = Enum.Font.GothamMedium
-    NameLbl.TextSize = 11
-    NameLbl.Visible = Config.Name or false
-    NameLbl.ZIndex = LayerIndex + 14
+    NameLbl.Text = "Player"
+    NameLbl.TextColor3 = Color3.new(1, 1, 1)
+    NameLbl.FontFace = Font.fromEnum(Enum.Font.SourceSans)
+    NameLbl.TextSize = 12
+    NameLbl.TextStrokeTransparency = 0
+    NameLbl.TextStrokeColor3 = Color3.new(0, 0, 0)
+    NameLbl.ZIndex = LayerIndex + 17
     NameLbl.Parent = ESPLayer
 
-    local NlStroke = Instance.new("UIStroke", NameLbl)
-    NlStroke.Color = Color3.new(0, 0, 0)
-    NlStroke.Thickness = 1.2
-
-    ------------------------------------------------------------
-    -- DISTANCE
-    ------------------------------------------------------------
-
-    local DistLbl = Instance.new("TextLabel")
-    DistLbl.Name = NeverLose.RandomString()
-    DistLbl.AnchorPoint = Vector2.new(0.5, 0)
-    DistLbl.Position =
-        UDim2.new(0.5, 0, 0.5, (boxH / 2) + 4)
-    DistLbl.Size = UDim2.fromOffset(130, 14)
-    DistLbl.BackgroundTransparency = 1
-    DistLbl.BorderSizePixel = 0
-    DistLbl.Text = "25m"
-    DistLbl.TextColor3 =
-        Config.DistanceColor or Color3.fromRGB(185, 185, 200)
-    DistLbl.Font = Enum.Font.GothamMedium
-    DistLbl.TextSize = 10
-    DistLbl.Visible = Config.Distance or false
-    DistLbl.ZIndex = LayerIndex + 14
-    DistLbl.Parent = ESPLayer
-
-    local DlStroke = Instance.new("UIStroke", DistLbl)
-    DlStroke.Color = Color3.new(0, 0, 0)
-    DlStroke.Thickness = 1
-
-    ------------------------------------------------------------
+    -- ============================================================
     -- WEAPON
-    ------------------------------------------------------------
-
+    -- ============================================================
     local WepLbl = Instance.new("TextLabel")
     WepLbl.Name = NeverLose.RandomString()
     WepLbl.AnchorPoint = Vector2.new(0.5, 0)
-    WepLbl.Position =
-        UDim2.new(0.5, 0, 0.5, (boxH / 2) + 18)
-    WepLbl.Size = UDim2.fromOffset(130, 14)
+    WepLbl.Position = UDim2.new(0.5, 0, 0.48, boxH / 2 + 2)
+    WepLbl.Size = UDim2.fromOffset(130, 12)
     WepLbl.BackgroundTransparency = 1
     WepLbl.BorderSizePixel = 0
-    WepLbl.Text = Config.Weapon or "M9"
-    WepLbl.TextColor3 =
-        Config.WeaponColor or Color3.fromRGB(160, 210, 255)
-    WepLbl.Font = Enum.Font.GothamMedium
-    WepLbl.TextSize = 10
-    WepLbl.Visible = Config.WeaponEnabled or false
-    WepLbl.ZIndex = LayerIndex + 14
+    WepLbl.Text = "Hands"
+    WepLbl.TextColor3 = Color3.new(1, 1, 1)
+    WepLbl.FontFace = Font.fromEnum(Enum.Font.SourceSans)
+    WepLbl.TextSize = 12
+    WepLbl.TextStrokeTransparency = 0
+    WepLbl.TextStrokeColor3 = Color3.new(0, 0, 0)
+    WepLbl.ZIndex = LayerIndex + 17
     WepLbl.Parent = ESPLayer
 
-    local WlStroke = Instance.new("UIStroke", WepLbl)
-    WlStroke.Color = Color3.new(0, 0, 0)
-    WlStroke.Thickness = 1
+    -- ============================================================
+    -- DISTANCE
+    -- ============================================================
+    local DistLbl = Instance.new("TextLabel")
+    DistLbl.Name = NeverLose.RandomString()
+    DistLbl.AnchorPoint = Vector2.new(0.5, 0)
+    DistLbl.Position = UDim2.new(0.5, 0, 0.48, boxH / 2 + 16)
+    DistLbl.Size = UDim2.fromOffset(130, 12)
+    DistLbl.BackgroundTransparency = 1
+    DistLbl.BorderSizePixel = 0
+    DistLbl.Text = "27м"
+    DistLbl.TextColor3 = Color3.new(1, 1, 1)
+    DistLbl.FontFace = Font.fromEnum(Enum.Font.SourceSans)
+    DistLbl.TextSize = 12
+    DistLbl.TextStrokeTransparency = 0
+    DistLbl.TextStrokeColor3 = Color3.new(0, 0, 0)
+    DistLbl.ZIndex = LayerIndex + 17
+    DistLbl.Parent = ESPLayer
 
-    ------------------------------------------------------------
+    -- ============================================================
     -- TRACER
-    ------------------------------------------------------------
-
+    -- ============================================================
     local TracerLine = Instance.new("Frame")
     TracerLine.Name = NeverLose.RandomString()
     TracerLine.AnchorPoint = Vector2.new(0.5, 1)
     TracerLine.Position = UDim2.new(0.5, 0, 1, 0)
-    TracerLine.Size =
-        UDim2.fromOffset(1, math.max(10, height / 2 - boxH / 2))
-    TracerLine.BackgroundColor3 =
-        Config.BoxColor or Color3.fromRGB(255, 255, 255)
+    TracerLine.Size = UDim2.fromOffset(1, math.max(1, height / 2 - boxH / 2))
+    TracerLine.BackgroundColor3 = Color3.new(1, 1, 1)
     TracerLine.BorderSizePixel = 0
-    TracerLine.Visible = Config.Tracer or false
-    TracerLine.ZIndex = LayerIndex + 13
+    TracerLine.ZIndex = LayerIndex + 11
     TracerLine.Parent = ESPLayer
 
-    ------------------------------------------------------------
-    -- CHAMS / GLOW
-    ------------------------------------------------------------
+    -- ============================================================
+    -- SKELETON
+    -- ============================================================
+    local SkeletonLines = {}
 
+    for i = 1, 20 do
+        local line = Instance.new("Frame")
+        line.Name = "SkeletonLine" .. i
+        line.BackgroundColor3 = Color3.new(1, 1, 1)
+        line.BorderSizePixel = 0
+        line.Visible = false
+        line.ZIndex = LayerIndex + 16
+        line.Parent = ESPLayer
+        SkeletonLines[i] = line
+    end
+
+    local function DrawScreenLine(lineFrame, fromPos, toPos, thickness)
+        if not fromPos or not toPos then
+            lineFrame.Visible = false
+            return
+        end
+
+        local center = (fromPos + toPos) / 2
+        local distance = (toPos - fromPos).Magnitude
+        local angle = math.atan2(toPos.Y - fromPos.Y, toPos.X - fromPos.X)
+
+        lineFrame.Position = UDim2.fromOffset(
+            center.X - distance / 2,
+            center.Y - thickness / 2
+        )
+        lineFrame.Size = UDim2.fromOffset(distance, thickness)
+        lineFrame.Rotation = math.deg(angle)
+        lineFrame.Visible = true
+    end
+
+    -- ============================================================
+    -- CHAMS / GLOW
+    -- ============================================================
     local chamHighlight = nil
     local glowHighlight = nil
 
@@ -4208,14 +4301,10 @@ function idx:AddPlayerPreview(Config)
 
         chamHighlight = Instance.new("Highlight")
         chamHighlight.Adornee = CharModel
-        chamHighlight.DepthMode =
-            Enum.HighlightDepthMode.AlwaysOnTop
-        chamHighlight.FillColor =
-            color or Color3.fromRGB(75, 125, 254)
-        chamHighlight.OutlineColor =
-            Color3.fromRGB(255, 255, 255)
-        chamHighlight.FillTransparency =
-            mode == "Glow" and 0.8 or 0.5
+        chamHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        chamHighlight.FillColor = color or Color3.fromRGB(75, 125, 254)
+        chamHighlight.OutlineColor = Color3.new(1, 1, 1)
+        chamHighlight.FillTransparency = (mode == "Glow") and 0.8 or 0.5
         chamHighlight.OutlineTransparency = 0.2
         chamHighlight.Parent = WorldModel
     end
@@ -4232,124 +4321,331 @@ function idx:AddPlayerPreview(Config)
 
         glowHighlight = Instance.new("Highlight")
         glowHighlight.Adornee = CharModel
-        glowHighlight.DepthMode =
-            Enum.HighlightDepthMode.AlwaysOnTop
+        glowHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
         glowHighlight.FillTransparency = 1
-        glowHighlight.OutlineColor =
-            color or Color3.fromRGB(75, 125, 254)
+        glowHighlight.OutlineColor = color or Color3.fromRGB(75, 125, 254)
         glowHighlight.OutlineTransparency = 0
         glowHighlight.Parent = WorldModel
     end
 
-    if Config.Chams and Config.Chams ~= "Off" then
-        applyChams(Config.Chams, Config.ChamsColor)
+    -- ============================================================
+    -- SYNC: ЧИТАЄ ТІЛЬКИ ТВОЇ Cheat.Toggles / Cheat.Colors
+    -- ============================================================
+    local lastHealth = 1
+    local lastBoxType = nil
+
+    local function getColor(colors, key, fallback)
+        local value = colors and colors[key]
+        if typeof(value) == "Color3" then
+            return value
+        end
+        return fallback
     end
 
-    if Config.Glow then
-        applyGlow(true, Config.GlowColor)
+    local function syncBoxColors(C)
+        OuterStroke.Color = getColor(C, "BoxOuter", Color3.new(0, 0, 0))
+        MainStroke.Color = getColor(C, "BoxMain", Color3.new(1, 1, 1))
+        InnerStroke.Color = getColor(C, "BoxInner", Color3.new(0, 0, 0))
+
+        local fillColor = getColor(C, "FillBox", Color3.new(1, 1, 1))
+        FillBox.BackgroundColor3 = fillColor
+
+        local tracerColor = getColor(C, "Tracer", Color3.new(1, 1, 1))
+        TracerLine.BackgroundColor3 = tracerColor
+
+        local nameColor = getColor(C, "Name", Color3.new(1, 1, 1))
+        NameLbl.TextColor3 = nameColor
+
+        local distanceColor = getColor(C, "Distance", Color3.new(1, 1, 1))
+        DistLbl.TextColor3 = distanceColor
+
+        local weaponColor = getColor(C, "WeaponName", Color3.new(1, 1, 1))
+        WepLbl.TextColor3 = weaponColor
+
+        local hpTextColor = getColor(C, "HealthText", Color3.new(1, 1, 1))
+        HpText.TextColor3 = hpTextColor
+
+        local skeletonColor = getColor(C, "Skeleton", Color3.new(1, 1, 1))
+        local skeletonTransparency = tonumber(C.SkeletonTransparency) or 0
+
+        for _, line in ipairs(SkeletonLines) do
+            line.BackgroundColor3 = skeletonColor
+            line.BackgroundTransparency = skeletonTransparency
+        end
+
+        HpMask.BackgroundColor3 = getColor(C, "HealthMask", Color3.new(0, 0, 0))
+        HpMask.BackgroundTransparency = tonumber(C.HealthMaskTransparency) or 0.3
+
+        local fillTransparency = tonumber(C.FillBoxTransparency)
+        if fillTransparency == nil then
+            fillTransparency = 0.3
+        end
+        FillBox.BackgroundTransparency = 1 - math.clamp(fillTransparency, 0, 1)
     end
 
-    ------------------------------------------------------------
-    -- VISIBILITY
-    ------------------------------------------------------------
+    local function updateHealthGradient(C, pct)
+        local startColor = getColor(C, "HealthGradientStart", Color3.new(1, 0, 0))
+        local midColor = getColor(C, "HealthGradientMid", Color3.new(1, 1, 0))
+        local endColor = getColor(C, "HealthGradientEnd", Color3.new(0, 1, 0))
 
-    local masterOn =
-        Config.Master == nil and true or Config.Master
+        pct = math.clamp(pct or 1, 0, 1)
 
-    local function refreshVisibility()
-        BoxFrame.Visible =
-            masterOn and (Config.Box or false)
-
-        HpBg.Visible =
-            masterOn and (Config.Health or false)
-
-        NameLbl.Visible =
-            masterOn and (Config.Name or false)
-
-        DistLbl.Visible =
-            masterOn and (Config.Distance or false)
-
-        WepLbl.Visible =
-            masterOn and (Config.WeaponEnabled or false)
-
-        TracerLine.Visible =
-            masterOn and (Config.Tracer or false)
+        if pct < 0.5 then
+            HpFill.BackgroundColor3 = startColor:Lerp(midColor, pct * 2)
+        else
+            HpFill.BackgroundColor3 = midColor:Lerp(endColor, (pct - 0.5) * 2)
+        end
     end
 
-    refreshVisibility()
+    local function setBoxMode(mode)
+        mode = mode or "Boxes"
 
-    ------------------------------------------------------------
-    -- PUBLIC API
-    ------------------------------------------------------------
+        local boxes = mode == "Boxes"
 
+        Outer.Visible = boxes
+        Main.Visible = boxes
+        Inner.Visible = boxes
+
+        for _, corner in ipairs(cornerParts) do
+            corner.Visible = not boxes
+        end
+    end
+
+    local function syncSkeleton()
+        local T = ESP.Toggles
+
+        for _, line in ipairs(SkeletonLines) do
+            line.Visible = false
+        end
+
+        if not T.Skeleton then
+            return
+        end
+
+        -- Це статичний Preview, тому Skeleton повторює структуру
+        -- R15/R6 і показує її всередині того самого ESP box.
+        local cx = Container.AbsoluteSize.X / 2
+        local cy = Container.AbsoluteSize.Y * 0.48
+
+        local head = Vector2.new(cx, cy - boxH / 2 + 7)
+        local torso = Vector2.new(cx, cy - 4)
+        local pelvis = Vector2.new(cx, cy + 20)
+
+        local lu = Vector2.new(cx - 13, cy - 2)
+        local ll = Vector2.new(cx - 20, cy + 15)
+        local lh = Vector2.new(cx - 24, cy + 28)
+
+        local ru = Vector2.new(cx + 13, cy - 2)
+        local rl = Vector2.new(cx + 20, cy + 15)
+        local rh = Vector2.new(cx + 24, cy + 28)
+
+        local lul = Vector2.new(cx - 9, cy + 25)
+        local lll = Vector2.new(cx - 13, cy + 53)
+        local lf = Vector2.new(cx - 15, cy + 42)
+
+        local rul = Vector2.new(cx + 9, cy + 25)
+        local rll = Vector2.new(cx + 13, cy + 53)
+        local rf = Vector2.new(cx + 15, cy + 42)
+
+        local index = 1
+
+        local function line(a, b)
+            if SkeletonLines[index] then
+                DrawScreenLine(SkeletonLines[index], a, b, 1)
+                index = index + 1
+            end
+        end
+
+        line(head, torso)
+        line(torso, pelvis)
+
+        line(torso, lu)
+        line(lu, ll)
+        line(ll, lh)
+
+        line(torso, ru)
+        line(ru, rl)
+        line(rl, rh)
+
+        line(pelvis, lul)
+        line(lul, lll)
+        line(lll, lf)
+
+        line(pelvis, rul)
+        line(rul, rll)
+        line(rll, rf)
+    end
+
+    local function SyncMyESP()
+        if not ESP or not ESP.Toggles then
+            return
+        end
+
+        local T = ESP.Toggles
+        local C = ESP.Colors or {}
+
+        local enabled = T.Enabled == true
+
+        -- Якщо ESP вимкнено — Preview теж вимикає всі ESP elements.
+        ESPLayer.Visible = enabled
+
+        -- BOX
+        if T.Box then
+            setBoxMode(T.BoxType)
+
+            OuterStroke.Color = getColor(C, "BoxOuter", Color3.new(0, 0, 0))
+            MainStroke.Color = getColor(C, "BoxMain", Color3.new(1, 1, 1))
+            InnerStroke.Color = getColor(C, "BoxInner", Color3.new(0, 0, 0))
+        else
+            Outer.Visible = false
+            Main.Visible = false
+            Inner.Visible = false
+
+            for _, corner in ipairs(cornerParts) do
+                corner.Visible = false
+            end
+        end
+
+        -- FILL BOX
+        FillBox.Visible = enabled and T.Box == true and T.FillBox == true
+        FillBox.BackgroundColor3 = getColor(C, "FillBox", Color3.new(1, 1, 1))
+
+        local fillTransparency = tonumber(C.FillBoxTransparency)
+        if fillTransparency == nil then
+            fillTransparency = 0.3
+        end
+        FillBox.BackgroundTransparency = 1 - math.clamp(fillTransparency, 0, 1)
+
+        -- NAME
+        NameLbl.Visible = enabled and T.Name == true
+        NameLbl.TextColor3 = getColor(C, "Name", Color3.new(1, 1, 1))
+        NameLbl.Text = T.UseDisplayName and "Player" or "Player"
+
+        -- HEALTH BAR
+        HpBg.Visible = enabled and T.HPBar == true
+        HpFill.Visible = true
+
+        -- HEALTH NUMBER
+        HpText.Visible = enabled and T.HPText == true
+        HpText.TextColor3 = getColor(C, "HealthText", Color3.new(1, 1, 1))
+        HpText.Text = "100"
+
+        -- HEALTH COLORS
+        updateHealthGradient(C, lastHealth)
+
+        -- WEAPON
+        WepLbl.Visible = enabled and T.WeaponName == true
+        WepLbl.TextColor3 = getColor(C, "WeaponName", Color3.new(1, 1, 1))
+        WepLbl.Text = "Hands"
+
+        -- DISTANCE
+        DistLbl.Visible = enabled and T.Distance == true
+        DistLbl.TextColor3 = getColor(C, "Distance", Color3.new(1, 1, 1))
+
+        if T.Metric == "Meters" then
+            DistLbl.Text = "27м"
+        else
+            DistLbl.Text = "96s"
+        end
+
+        -- TRACER
+        TracerLine.Visible = enabled and T.Tracer == true
+        TracerLine.BackgroundColor3 = getColor(C, "Tracer", Color3.new(1, 1, 1))
+
+        -- SKELETON
+        if enabled and T.Skeleton then
+            syncSkeleton()
+        else
+            for _, line in ipairs(SkeletonLines) do
+                line.Visible = false
+            end
+        end
+
+        -- COLORS
+        syncBoxColors(C)
+
+        -- Keep BoxType synced.
+        if lastBoxType ~= T.BoxType then
+            lastBoxType = T.BoxType
+            setBoxMode(T.BoxType)
+        end
+    end
+
+    -- ============================================================
+    -- INITIAL / RENDER
+    -- ============================================================
+    if ESP then
+        SyncMyESP()
+    end
+
+    NeverLose:AddSignal(RunService.RenderStepped:Connect(function(dt)
+        if ESP then
+            SyncMyESP()
+        end
+
+        if not dragging and autoSpin then
+            rotY = rotY + dt * 22
+            applyCamera()
+        end
+    end))
+
+    -- ============================================================
+    -- SECTION SIGNAL
+    -- ============================================================
     local PreviewLib = {}
 
+    PreviewLib.SetRender = function(value)
+        Container.Visible = value
+        autoSpin = value
+    end
+
+    if Signel then
+        PreviewLib.SetRender(Signel:GetValue())
+        Signel:Connect(PreviewLib.SetRender)
+    end
+
+    -- ============================================================
+    -- PUBLIC API
+    -- Залишено для сумісності зі старим кодом.
+    -- Але основне джерело тепер ESP = Config.ESP.
+    -- ============================================================
     function PreviewLib:SetMaster(v)
-        masterOn = v
-        refreshVisibility()
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Enabled = v
+        end
     end
 
     function PreviewLib:SetBox(enabled, color)
-        Config.Box = enabled
-
-        if color then
-            Config.BoxColor = color
-            BoxStroke.Color = color
-            TracerLine.BackgroundColor3 = color
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Box = enabled
+            if color and ESP.Colors then
+                ESP.Colors.BoxMain = color
+            end
         end
-
-        refreshVisibility()
+        SyncMyESP()
     end
 
-    function PreviewLib:SetHealth(enabled, color)
-        Config.Health = enabled
+    function PreviewLib:SetHealth(enabled, colors)
+        if ESP and ESP.Toggles then
+            ESP.Toggles.HPBar = enabled
 
-        if color then
-            HpFill.BackgroundColor3 = color
+            if colors and ESP.Colors then
+                ESP.Colors.HealthGradientEnd = colors[1] or ESP.Colors.HealthGradientEnd
+                ESP.Colors.HealthGradientMid = colors[2] or ESP.Colors.HealthGradientMid
+                ESP.Colors.HealthGradientStart = colors[3] or ESP.Colors.HealthGradientStart
+            end
         end
-
-        refreshVisibility()
+        SyncMyESP()
     end
 
     function PreviewLib:SetName(enabled, color)
-        Config.Name = enabled
-
-        if color then
-            NameLbl.TextColor3 = color
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Name = enabled
+            if color and ESP.Colors then
+                ESP.Colors.Name = color
+            end
         end
-
-        refreshVisibility()
-    end
-
-    function PreviewLib:SetDistance(enabled, color)
-        Config.Distance = enabled
-
-        if color then
-            DistLbl.TextColor3 = color
-        end
-
-        refreshVisibility()
-    end
-
-    function PreviewLib:SetWeapon(weapon, visible, color)
-        WepLbl.Text = weapon or ""
-
-        if color then
-            WepLbl.TextColor3 = color
-        end
-
-        Config.WeaponEnabled = visible
-        refreshVisibility()
-    end
-
-    function PreviewLib:SetTracer(enabled, color)
-        Config.Tracer = enabled
-
-        if color then
-            TracerLine.BackgroundColor3 = color
-        end
-
-        refreshVisibility()
+        SyncMyESP()
     end
 
     function PreviewLib:SetChams(mode, color)
@@ -4361,101 +4657,78 @@ function idx:AddPlayerPreview(Config)
     end
 
     function PreviewLib:SetNameText(text)
-        NameLbl.Text = text or "ESP Preview"
+        NameLbl.Text = text or "Player"
+    end
+
+    function PreviewLib:SetWeapon(weapon, visible)
+        WepLbl.Text = weapon or "Hands"
+
+        if ESP and ESP.Toggles then
+            ESP.Toggles.WeaponName = visible == true
+        end
+
+        SyncMyESP()
+    end
+
+    function PreviewLib:SetDistance(enabled, color)
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Distance = enabled
+            if color and ESP.Colors then
+                ESP.Colors.Distance = color
+            end
+        end
+        SyncMyESP()
+    end
+
+    function PreviewLib:SetTracer(enabled, color)
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Tracer = enabled
+            if color and ESP.Colors then
+                ESP.Colors.Tracer = color
+            end
+        end
+        SyncMyESP()
+    end
+
+    function PreviewLib:SetSkeleton(enabled, color)
+        if ESP and ESP.Toggles then
+            ESP.Toggles.Skeleton = enabled
+            if color and ESP.Colors then
+                ESP.Colors.Skeleton = color
+            end
+        end
+        SyncMyESP()
     end
 
     function PreviewLib:SetAutoSpin(v)
-        autoSpin = v
-    end
-
-    function PreviewLib:SetRotation(v)
-        rotY = v or 0
-        applyCamera()
+        autoSpin = v == true
     end
 
     function PreviewLib:SetMeshColor(color)
-        if color then
+        if typeof(color) == "Color3" then
             CharPart.Color = color
         end
     end
 
     function PreviewLib:SetHealthPercent(pct)
-        local clamped = math.clamp(pct or 1, 0, 1)
+        lastHealth = math.clamp(pct or 1, 0, 1)
 
-        HpFill.Size =
-            UDim2.new(1, 0, clamped, 0)
-
-        local h = clamped * 0.33
-
-        HpFill.BackgroundColor3 =
-            Color3.fromHSV(h, 0.85, 0.9)
-    end
-
-    ------------------------------------------------------------
-    -- ПІДКЛЮЧЕННЯ ДО ТВОГО ESP
-    ------------------------------------------------------------
-
-    function PreviewLib:SyncESP(ESP)
-        if not ESP then
-            return
+        if ESP and ESP.Colors then
+            updateHealthGradient(ESP.Colors, lastHealth)
         end
 
-        local T = ESP.Toggles
-        local C = ESP.Colors
+        local maskHeight = boxH * (1 - lastHealth)
+        HpMask.Size = UDim2.fromOffset(2, maskHeight)
 
-        if not T or not C then
-            return
+        HpText.Text = tostring(math.floor(lastHealth * 100))
+    end
+
+    function PreviewLib:SyncESP(esp)
+        if esp then
+            ESP = esp
         end
-
-        self:SetBox(
-            T.Box,
-            C.BoxMain
-        )
-
-        self:SetHealth(
-            T.HPBar,
-            C.HealthGradientEnd
-        )
-
-        self:SetName(
-            T.Name,
-            C.Name
-        )
-
-        self:SetDistance(
-            T.Distance,
-            C.Distance
-        )
-
-        self:SetWeapon(
-            "M9",
-            T.WeaponName,
-            C.WeaponName
-        )
-
-        self:SetTracer(
-            T.Tracer,
-            C.Tracer
-        )
-
-        self:SetNameText(
-            T.UseDisplayName and "Preview Player" or "ESP Preview"
-        )
+        SyncMyESP()
     end
-
-    ------------------------------------------------------------
-    -- SECTION RENDER
-    ------------------------------------------------------------
-
-    local masterSignal = Signel:GetValue()
-
-    local function SetRender(value)
-        Container.Visible = value
-        autoSpin = value
-    end
-
-    SetRender(masterSignal)
-    Signel:Connect(SetRender)
 
     return PreviewLib
 end
