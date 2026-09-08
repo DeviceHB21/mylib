@@ -3858,6 +3858,19 @@ function idx:AddPlayerPreview(Config)
     -- ============================================================
     local ESP = Config.ESP
 
+    -- Auto-connect to the ESP script.
+    -- The ESP script registers its Cheat table here, so no manual
+    -- ESP=Cheat argument is required when AddPlayerPreview is called.
+    if not ESP then
+        local ok, env = pcall(function()
+            return getgenv and getgenv()
+        end)
+
+        if ok and env then
+            ESP = env.__NeverLoseESP
+        end
+    end
+
     -- ============================================================
     -- CONTAINER
     -- ============================================================
@@ -4333,6 +4346,27 @@ function idx:AddPlayerPreview(Config)
     -- ============================================================
     local lastHealth = 1
     local lastBoxType = nil
+
+    -- If Preview was created before the ESP script registered Cheat,
+    -- pick it up automatically as soon as it appears.
+    task.spawn(function()
+        for _ = 1, 120 do
+            if ESP then
+                break
+            end
+
+            local ok, env = pcall(function()
+                return getgenv and getgenv()
+            end)
+
+            if ok and env and env.__NeverLoseESP then
+                ESP = env.__NeverLoseESP
+                break
+            end
+
+            task.wait(0.05)
+        end
+    end)
 
     local function getColor(colors, key, fallback)
         local value = colors and colors[key]
