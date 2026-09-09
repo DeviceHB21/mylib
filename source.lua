@@ -3856,9 +3856,13 @@ function idx:AddPlayerPreview(Config)
     local meshId = "rbxassetid://2727038386"
 
     if PlayerGui then
-        local old = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboardScreen")
+        local old = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboard")
         if old then
             old:Destroy()
+        end
+        local oldAnchor = Workspace:FindFirstChild("__NeverLosePreviewAnchor")
+        if oldAnchor then
+            oldAnchor:Destroy()
         end
     end
 
@@ -3922,17 +3926,17 @@ function idx:AddPlayerPreview(Config)
     -- Parenting it directly to PlayerGui can put it behind the library's
     -- main ScreenGui, which makes the ESP appear completely invisible.
     local BillboardScreen = Instance.new("ScreenGui")
-    BillboardScreen.Name = "__NeverLoseESPPreviewBillboardScreen"
-    BillboardScreen.ResetOnSpawn = false
-    BillboardScreen.IgnoreGuiInset = true
-    BillboardScreen.DisplayOrder = 1000000
-    BillboardScreen.ZIndexBehavior = Enum.ZIndexBehavior.Global
-    BillboardScreen.Parent = PlayerGui
+    Billboard.Name = "__NeverLoseESPPreviewBillboardScreen"
+    Billboard.ResetOnSpawn = false
+    Billboard.IgnoreGuiInset = true
+    Billboard.DisplayOrder = 1000000
+    Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    Billboard.Parent = PlayerGui
 
     local Billboard = Instance.new("BillboardGui")
     Billboard.Name = "__NeverLoseESPPreviewBillboard"
     Billboard.Adornee = Anchor
-    Billboard.Parent = BillboardScreen
+    Billboard.Parent = PlayerGui
     Billboard.AlwaysOnTop = true
     Billboard.LightInfluence = 0
     Billboard.MaxDistance = 100000
@@ -4415,7 +4419,7 @@ function idx:AddPlayerPreview(Config)
         local sy = absPos.Y + absSize.Y * 0.5
 
         local ray = cam:ViewportPointToRay(sx, sy)
-        Anchor.CFrame = CFrame.new(ray.Origin + ray.Direction * 10)
+        Anchor.CFrame = CFrame.new(ray.Origin + ray.Direction * 12)
 
         Billboard.Size = UDim2.fromOffset(math.max(1, absSize.X), math.max(1, absSize.Y))
         Billboard.StudsOffset = Vector3.new(0, 0, 0)
