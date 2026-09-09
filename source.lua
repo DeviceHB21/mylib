@@ -3845,777 +3845,746 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		return UserFrameItem;
 	end;
 
+--[[
+╔══════════════════════════════════════════════════════════════╗
+║  ESP + PlayerPreview інтеграція                              ║
+║                                                              ║
+║  ЧАСТИНА A — оновлений AddPlayerPreview                      ║
+║  Вставити ПЕРЕД "return idx;" в RegisiterItem()             ║
+║                                                              ║
+║  ЧАСТИНА B — повний ESP блок з підключеним превью           ║
+║  Замінює твій поточний ESP блок                              ║
+╚══════════════════════════════════════════════════════════════╝
+--]]
+
+-- ════════════════════════════════════════════════════════════
+-- [ЧАСТИНА A] ПЕРЕД "return idx;" в RegisiterItem()
+-- ════════════════════════════════════════════════════════════
+
 function idx:AddPlayerPreview(Config)
     Config = Config or {}
+    local height = Config.Height or 210
 
-    local Players = game:GetService("Players")
-    local Workspace = game:GetService("Workspace")
-    local PlayerGui = Players.LocalPlayer and Players.LocalPlayer:FindFirstChildOfClass("PlayerGui")
-
-    local height = Config.Height or 150
-    local meshId = "rbxassetid://2727038386"
-
-    if PlayerGui then
-        local old = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboard")
-        if old then
-            old:Destroy()
-        end
-        local oldAnchor = Workspace:FindFirstChild("__NeverLosePreviewAnchor")
-        if oldAnchor then
-            oldAnchor:Destroy()
-        end
-    end
-
-    -- ============================================================
-    -- LIVE ESP SOURCE
-    -- ============================================================
-    local ESP = Config.ESP
-
-    if not ESP then
-        local ok, env = pcall(function()
-            return getgenv and getgenv()
-        end)
-
-        if ok and env then
-            ESP = env.__NeverLoseESP
-        end
-    end
-
-    -- ============================================================
-    -- HOLDER / PANEL
-    -- ============================================================
+    -- ── Контейнер ────────────────────────────────────────────
     local Container = Instance.new("Frame")
-    Container.Name = NeverLose.RandomString()
-    Container.Parent = Frame
-    Container.BackgroundColor3 = Color3.fromRGB(14, 16, 22)
-    Container.BackgroundTransparency = 0
-    Container.BorderSizePixel = 0
-    Container.Size = UDim2.new(1, 0, 0, height)
-    Container.ZIndex = LayerIndex + 8
-    Container.ClipsDescendants = true
-    Container.Active = true
+    Container.Name                  = NeverLose.RandomString()
+    Container.Parent                = Frame
+    Container.BackgroundColor3      = Color3.fromRGB(12, 14, 20)
+    Container.BorderSizePixel       = 0
+    Container.Size                  = UDim2.new(1, 0, 0, height)
+    Container.ZIndex                = LayerIndex + 8
+    Container.ClipsDescendants      = true
+    local _c = Instance.new("UICorner", Container) _c.CornerRadius = UDim.new(0, 8)
+    local _s = Instance.new("UIStroke", Container) _s.Color = Color3.fromRGB(40,44,56) _s.Transparency = 0.4
 
-    local ContCorner = Instance.new("UICorner")
-    ContCorner.CornerRadius = UDim.new(0, 8)
-    ContCorner.Parent = Container
+    -- ── Лейбл "Preview" ──────────────────────────────────────
+    local TopLabel = Instance.new("TextLabel", Container)
+    TopLabel.Size = UDim2.new(1, 0, 0, 16)
+    TopLabel.BackgroundTransparency = 1
+    TopLabel.TextColor3 = Color3.fromRGB(100, 100, 130)
+    TopLabel.Font = Enum.Font.GothamMedium
+    TopLabel.TextSize = 10
+    TopLabel.Text = "  ESP PREVIEW"
+    TopLabel.TextXAlignment = Enum.TextXAlignment.Left
+    TopLabel.ZIndex = LayerIndex + 15
 
-    local ContStroke = Instance.new("UIStroke")
-    ContStroke.Color = Color3.fromRGB(45, 48, 58)
-    ContStroke.Transparency = 0.5
-    ContStroke.Parent = Container
-
-    -- ============================================================
-    -- REAL BILLBOARD GUI
-    --
-    -- Roblox does not render BillboardGui inside a ViewportFrame.
-    -- Therefore the BillboardGui is parented to PlayerGui and
-    -- attached to a Workspace anchor. The anchor is projected to
-    -- the exact center of this preview panel every frame.
-    -- ============================================================
-    local Anchor = Instance.new("Part")
-    Anchor.Name = "__NeverLosePreviewAnchor"
-    Anchor.Anchored = true
-    Anchor.CanCollide = false
-    Anchor.CanTouch = false
-    Anchor.CanQuery = false
-    Anchor.Transparency = 1
-    Anchor.Size = Vector3.new(0.1, 0.1, 0.1)
-    Anchor.Parent = Workspace
-
-    -- Put the BillboardGui into its own high DisplayOrder ScreenGui.
-    -- Parenting it directly to PlayerGui can put it behind the library's
-    -- main ScreenGui, which makes the ESP appear completely invisible.
-    -- Remove an older preview Billboard before creating a new one.
-    local oldBillboard = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboard")
-    if oldBillboard then
-        oldBillboard:Destroy()
-    end
-
-    -- BillboardGui must be a direct child of PlayerGui.
-    local Billboard = Instance.new("BillboardGui")
-    Billboard.Name = "__NeverLoseESPPreviewBillboard"
-    Billboard.Adornee = Anchor
-    Billboard.AlwaysOnTop = true
-    Billboard.ResetOnSpawn = false
-    Billboard.Size = UDim2.fromOffset(160, 220)
-    Billboard.StudsOffset = Vector3.new(0, 0, 0)
-    Billboard.MaxDistance = 100000
-    Billboard.Parent = PlayerGui
-
-    local Billboard = Instance.new("BillboardGui")
-    Billboard.Name = "__NeverLoseESPPreviewBillboard"
-    Billboard.Adornee = Anchor
-    Billboard.Parent = PlayerGui
-    Billboard.AlwaysOnTop = true
-    Billboard.LightInfluence = 0
-    Billboard.MaxDistance = 100000
-    Billboard.Size = UDim2.fromOffset(300, height)
-    Billboard.StudsOffset = Vector3.new(0, 0, 0)
-    Billboard.ClipsDescendants = false
-    Billboard.Enabled = true
-    Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Global
-
-    -- This transparent frame is the actual BillboardGui canvas.
-    local Canvas = Instance.new("Frame")
-    Canvas.Name = "Canvas"
-    Canvas.Parent = Billboard
-    Canvas.BackgroundTransparency = 1
-    Canvas.BorderSizePixel = 0
-    Canvas.Size = UDim2.fromScale(1, 1)
-    Canvas.ClipsDescendants = true
-
-    -- ============================================================
-    -- 3D CHARACTER — rendered by a ViewportFrame INSIDE BillboardGui
-    -- ============================================================
-    local VF = Instance.new("ViewportFrame")
-    VF.Name = "CharacterViewport"
-    VF.Parent = Canvas
+    -- ── ViewportFrame ─────────────────────────────────────────
+    local VF = Instance.new("ViewportFrame", Container)
+    VF.Name                 = NeverLose.RandomString()
+    VF.Size                 = UDim2.new(1, 0, 1, -16)
+    VF.Position             = UDim2.new(0, 0, 0, 16)
     VF.BackgroundTransparency = 1
-    VF.BorderSizePixel = 0
-    VF.Size = UDim2.fromScale(1, 1)
-    VF.ZIndex = 1
-    VF.LightColor = Color3.fromRGB(235, 235, 235)
-    VF.Ambient = Color3.fromRGB(150, 150, 150)
-    VF.LightDirection = Vector3.new(-1, -2, -1)
+    VF.BorderSizePixel      = 0
+    VF.ZIndex               = LayerIndex + 9
+    VF.LightColor           = Color3.fromRGB(230, 230, 230)
+    VF.Ambient              = Color3.fromRGB(140, 140, 140)
+    VF.LightDirection       = Vector3.new(-1, -2, -0.8)
 
-    local VCam = Instance.new("Camera")
-    VCam.Parent = VF
+    local VCam = Instance.new("Camera", VF)
     VF.CurrentCamera = VCam
 
-    local WorldModel = Instance.new("WorldModel")
-    WorldModel.Parent = VF
+    local WorldModel = Instance.new("WorldModel", VF)
 
-    local CharModel = Instance.new("Model")
-    CharModel.Name = "PreviewCharacter"
-    CharModel.Parent = WorldModel
+    -- ── Клонуємо РЕАЛЬНИЙ персонаж гравця ────────────────────
+    local charClone  = nil
+    local cloneRoot  = nil
 
-    local CharPart = Instance.new("Part")
-    CharPart.Name = "Char"
-    CharPart.Anchored = true
-    CharPart.CanCollide = false
-    CharPart.CastShadow = false
-    CharPart.Size = Vector3.new(1, 1, 1)
-    CharPart.Color = Color3.fromRGB(210, 210, 210)
-    CharPart.Material = Enum.Material.SmoothPlastic
-    CharPart.TopSurface = Enum.SurfaceType.Smooth
-    CharPart.BottomSurface = Enum.SurfaceType.Smooth
-    CharPart.CFrame = CFrame.new(0, 0, 0)
-    CharPart.Parent = CharModel
+    local function loadCharacter()
+        if charClone then charClone:Destroy() charClone = nil end
 
-    local CharMesh = Instance.new("SpecialMesh")
-    CharMesh.MeshType = Enum.MeshType.FileMesh
-    CharMesh.MeshId = meshId
-    CharMesh.Scale = Vector3.new(1.5, 1.5, 1.5)
-    CharMesh.Parent = CharPart
+        local lp   = cloneref and cloneref(game:GetService("Players").LocalPlayer) or game:GetService("Players").LocalPlayer
+        local char = lp and lp.Character
+        if not char then return end
 
-    CharModel.PrimaryPart = CharPart
+        local ok, clone = pcall(function() return char:Clone() end)
+        if not ok or not clone then return end
 
-    local Platform = Instance.new("Part")
-    Platform.Name = "Platform"
-    Platform.Anchored = true
+        -- Прибираємо скрипти, гуманоїд, білбоарди
+        for _, v in ipairs(clone:GetDescendants()) do
+            if v:IsA("Script") or v:IsA("LocalScript") or v:IsA("ModuleScript")
+            or v:IsA("Humanoid") or v:IsA("AnimationController")
+            or v:IsA("BillboardGui") or v:IsA("SurfaceGui")
+            or v:IsA("BodyVelocity") or v:IsA("BodyGyro")
+            or v:IsA("BodyPosition") or v:IsA("Highlight") then
+                pcall(function() v:Destroy() end)
+            end
+        end
+
+        -- Якорюємо всі части
+        for _, v in ipairs(clone:GetDescendants()) do
+            if v:IsA("BasePart") or v:IsA("MeshPart") or v:IsA("UnionOperation") then
+                v.Anchored   = true
+                v.CanCollide = false
+                v.CastShadow = false
+                v.Locked     = true
+            end
+        end
+
+        -- Центруємо на (0,0,0)
+        local hrp = clone:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local offset = hrp.Position
+            for _, v in ipairs(clone:GetDescendants()) do
+                if v:IsA("BasePart") or v:IsA("MeshPart") then
+                    v.CFrame = v.CFrame - offset
+                end
+            end
+            hrp.CFrame = CFrame.new(0, 0, 0)
+        end
+
+        clone.Parent = WorldModel
+        charClone = clone
+        cloneRoot = hrp
+    end
+
+    loadCharacter()
+
+    -- Оновлюємо при зміні вигляду
+    local lp2 = game:GetService("Players").LocalPlayer
+    lp2.CharacterAdded:Connect(function()
+        task.wait(1.5)
+        loadCharacter()
+    end)
+
+    -- Кнопка оновити скін (у нижньому куті)
+    local RefreshBtn = Instance.new("TextButton", Container)
+    RefreshBtn.Size = UDim2.new(0, 22, 0, 22)
+    RefreshBtn.Position = UDim2.new(1, -26, 0, 20)
+    RefreshBtn.BackgroundColor3 = Color3.fromRGB(28, 32, 42)
+    RefreshBtn.BorderSizePixel = 0
+    RefreshBtn.Text = "↺"
+    RefreshBtn.TextColor3 = Color3.fromRGB(130, 130, 160)
+    RefreshBtn.Font = Enum.Font.GothamBold
+    RefreshBtn.TextSize = 14
+    RefreshBtn.ZIndex = LayerIndex + 16
+    local _rc = Instance.new("UICorner", RefreshBtn) _rc.CornerRadius = UDim.new(0, 5)
+    RefreshBtn.MouseButton1Click:Connect(loadCharacter)
+
+    -- ── Платформа ─────────────────────────────────────────────
+    local Platform = Instance.new("Part", WorldModel)
+    Platform.Anchored   = true
     Platform.CanCollide = false
     Platform.CastShadow = false
-    Platform.Size = Vector3.new(3, 0.1, 3)
-    Platform.Color = Color3.fromRGB(35, 37, 48)
-    Platform.Material = Enum.Material.SmoothPlastic
-    Platform.CFrame = CFrame.new(0, -1.75, 0)
-    Platform.Parent = WorldModel
+    Platform.Size       = Vector3.new(4, 0.08, 4)
+    Platform.CFrame     = CFrame.new(0, -3.2, 0)
+    Platform.Color      = Color3.fromRGB(28, 32, 44)
+    Platform.Material   = Enum.Material.SmoothPlastic
+    Platform.TopSurface = Enum.SurfaceType.Smooth
+    Platform.BottomSurface = Enum.SurfaceType.Smooth
+    local _pm = Instance.new("CylinderMesh", Platform)
 
-    local PlatMesh = Instance.new("CylinderMesh")
-    PlatMesh.Parent = Platform
-
-    -- ============================================================
-    -- VIEWPORT CAMERA
-    -- ============================================================
-    local rotY = 0
-    local camDst = 5.8
-    local camH = 0.45
-    local autoSpin = true
-    local dragging = false
-    local lastMouseX = 0
+    -- ── Камера ────────────────────────────────────────────────
+    local rotY   = 0
+    local camDst = 9
+    local camH   = 0.8
 
     local function applyCamera()
         local rad = math.rad(rotY)
-        local cx = math.sin(rad) * camDst
-        local cz = math.cos(rad) * camDst
-
         VCam.CFrame = CFrame.new(
-            Vector3.new(cx, camH, cz),
+            Vector3.new(math.sin(rad)*camDst, camH, math.cos(rad)*camDst),
             Vector3.new(0, camH, 0)
         )
     end
-
     applyCamera()
 
-    -- Drag anywhere on the preview.
-    NeverLose:AddSignal(Container.InputBegan:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            lastMouseX = inp.Position.X
+    -- ── Drag ──────────────────────────────────────────────────
+    local dragging, lastX = false, 0
+    NeverLose:AddSignal(VF.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1
+        or i.UserInputType == Enum.UserInputType.Touch then
+            dragging = true  lastX = i.Position.X
         end
     end))
-
-    NeverLose:AddSignal(Container.InputEnded:Connect(function(inp)
-        if inp.UserInputType == Enum.UserInputType.MouseButton1
-        or inp.UserInputType == Enum.UserInputType.Touch then
+    NeverLose:AddSignal(VF.InputEnded:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1
+        or i.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end))
-
-    NeverLose:AddSignal(UserInputService.InputChanged:Connect(function(inp)
-        if not dragging then
-            return
-        end
-
-        if inp.UserInputType == Enum.UserInputType.MouseMovement
-        or inp.UserInputType == Enum.UserInputType.Touch then
-            local dx = inp.Position.X - lastMouseX
-            lastMouseX = inp.Position.X
-            rotY += dx * 0.55
+    NeverLose:AddSignal(UserInputService.InputChanged:Connect(function(i)
+        if not dragging then return end
+        if i.UserInputType == Enum.UserInputType.MouseMovement
+        or i.UserInputType == Enum.UserInputType.Touch then
+            rotY   = rotY + (i.Position.X - lastX) * 0.65
+            lastX  = i.Position.X
             applyCamera()
         end
     end))
 
-    -- ============================================================
-    -- REAL BILLBOARD ESP UI
-    -- ============================================================
-    local ESPRoot = Instance.new("Frame")
-    ESPRoot.Name = "ESP"
-    ESPRoot.Parent = Canvas
-    ESPRoot.BackgroundTransparency = 1
-    ESPRoot.BorderSizePixel = 0
-    ESPRoot.Size = UDim2.fromScale(1, 1)
-    ESPRoot.ZIndex = 20
-
-    local Box = Instance.new("Frame")
-    Box.Name = "Box"
-    Box.Parent = ESPRoot
-    Box.BackgroundTransparency = 1
-    Box.BorderSizePixel = 1
-    Box.Size = UDim2.fromOffset(76, 118)
-    Box.Position = UDim2.new(0.5, -38, 0.5, -59)
-    Box.ZIndex = 22
-
-    local BoxStroke = Instance.new("UIStroke")
-    BoxStroke.Thickness = 1
-    BoxStroke.Parent = Box
-
-    local CornerLines = {}
-    for i = 1, 8 do
-        local line = Instance.new("Frame")
-        line.Name = "Corner" .. i
-        line.Parent = ESPRoot
-        line.BorderSizePixel = 0
-        line.BackgroundColor3 = Color3.new(1, 1, 1)
-        line.ZIndex = 23
-        line.Visible = false
-        CornerLines[i] = line
-    end
-
-    local FillBox = Instance.new("Frame")
-    FillBox.Name = "FillBox"
-    FillBox.Parent = ESPRoot
-    FillBox.BorderSizePixel = 0
-    FillBox.Size = UDim2.fromOffset(74, 116)
-    FillBox.Position = UDim2.new(0.5, -37, 0.5, -58)
-    FillBox.ZIndex = 21
-    FillBox.BackgroundTransparency = 0.7
-
-    local HPBack = Instance.new("Frame")
-    HPBack.Name = "HPBack"
-    HPBack.Parent = ESPRoot
-    HPBack.BorderSizePixel = 0
-    HPBack.Size = UDim2.fromOffset(3, 118)
-    HPBack.Position = UDim2.new(0.5, -44, 0.5, -59)
-    HPBack.ZIndex = 25
-
-    local HPFill = Instance.new("Frame")
-    HPFill.Name = "HPFill"
-    HPFill.Parent = HPBack
-    HPFill.BorderSizePixel = 0
-    HPFill.AnchorPoint = Vector2.new(0, 1)
-    HPFill.Position = UDim2.fromScale(0, 1)
-    HPFill.Size = UDim2.fromScale(1, 1)
-    HPFill.ZIndex = 26
-
-    local function makeLabel(name, pos, size)
-        local l = Instance.new("TextLabel")
-        l.Name = name
-        l.Parent = ESPRoot
-        l.BackgroundTransparency = 1
-        l.BorderSizePixel = 0
-        l.Size = size
-        l.Position = pos
-        l.Font = Enum.Font.SourceSans
-        l.TextSize = 13
-        l.TextColor3 = Color3.new(1, 1, 1)
-        l.TextStrokeTransparency = 0
-        l.TextStrokeColor3 = Color3.new(0, 0, 0)
-        l.TextXAlignment = Enum.TextXAlignment.Center
-        l.ZIndex = 27
-        return l
-    end
-
-    local NameLbl = makeLabel(
-        "Name",
-        UDim2.new(0.5, -65, 0.5, -78),
-        UDim2.fromOffset(130, 18)
-    )
-
-    local WepLbl = makeLabel(
-        "Weapon",
-        UDim2.new(0.5, -65, 0.5, 62),
-        UDim2.fromOffset(130, 18)
-    )
-
-    local DistLbl = makeLabel(
-        "Distance",
-        UDim2.new(0.5, -65, 0.5, 77),
-        UDim2.fromOffset(130, 18)
-    )
-
-    local HPText = makeLabel(
-        "HPText",
-        UDim2.new(0.5, -85, 0.5, -8),
-        UDim2.fromOffset(30, 18)
-    )
-
-    local Tracer = Instance.new("Frame")
-    Tracer.Name = "Tracer"
-    Tracer.Parent = ESPRoot
-    Tracer.BorderSizePixel = 0
-    Tracer.Size = UDim2.fromOffset(1, 35)
-    Tracer.Position = UDim2.new(0.5, 0, 1, -35)
-    Tracer.AnchorPoint = Vector2.new(0.5, 0)
-    Tracer.ZIndex = 20
-    Tracer.Visible = false
-
-    -- Simple skeleton using Frame lines.
-    local SkeletonFolder = Instance.new("Folder")
-    SkeletonFolder.Name = "Skeleton"
-    SkeletonFolder.Parent = ESPRoot
-
-    local SkeletonParts = {}
-    for i = 1, 14 do
-        local line = Instance.new("Frame")
-        line.Name = "Line" .. i
-        line.Parent = SkeletonFolder
-        line.BorderSizePixel = 0
-        line.AnchorPoint = Vector2.new(0.5, 0.5)
-        line.Size = UDim2.fromOffset(1, 10)
-        line.ZIndex = 24
-        line.Visible = false
-        SkeletonParts[i] = line
-    end
-
-    local lastHealth = 1
-
-    local chamHighlight
-    local glowHighlight
-
-    local function applyChams(mode, color)
-        if chamHighlight then
-            chamHighlight:Destroy()
-            chamHighlight = nil
-        end
-
-        if not mode or mode == "Off" then
-            return
-        end
-
-        chamHighlight = Instance.new("Highlight")
-        chamHighlight.Adornee = CharModel
-        chamHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        chamHighlight.FillColor = color or Color3.fromRGB(75, 125, 254)
-        chamHighlight.OutlineColor = Color3.new(1, 1, 1)
-        chamHighlight.FillTransparency = (mode == "Glow") and 0.8 or 0.5
-        chamHighlight.OutlineTransparency = 0.2
-        chamHighlight.Parent = WorldModel
-    end
-
-    local function applyGlow(enabled, color)
-        if glowHighlight then
-            glowHighlight:Destroy()
-            glowHighlight = nil
-        end
-
-        if not enabled then
-            return
-        end
-
-        glowHighlight = Instance.new("Highlight")
-        glowHighlight.Adornee = CharModel
-        glowHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        glowHighlight.FillTransparency = 1
-        glowHighlight.OutlineColor = color or Color3.fromRGB(75, 125, 254)
-        glowHighlight.OutlineTransparency = 0
-        glowHighlight.Parent = WorldModel
-    end
-
-
-    local function getColor(C, key, fallback)
-        local v = C and C[key]
-        if typeof(v) == "Color3" then
-            return v
-        end
-        return fallback
-    end
-
-    local function updateHealthGradient(C, pct)
-        local startColor = getColor(C, "HealthGradientStart", Color3.new(1, 0, 0))
-        local midColor = getColor(C, "HealthGradientMid", Color3.new(1, 1, 0))
-        local endColor = getColor(C, "HealthGradientEnd", Color3.new(0, 1, 0))
-
-        pct = math.clamp(pct or 1, 0, 1)
-
-        if pct < 0.5 then
-            HPFill.BackgroundColor3 = startColor:Lerp(midColor, pct * 2)
-        else
-            HPFill.BackgroundColor3 = midColor:Lerp(endColor, (pct - 0.5) * 2)
-        end
-    end
-
-    local function setLine(line, x1, y1, x2, y2, color, visible)
-        if not line then return end
-
-        local dx = x2 - x1
-        local dy = y2 - y1
-        local len = math.sqrt(dx * dx + dy * dy)
-
-        line.Position = UDim2.new(0.5, (x1 + x2) * 0.5, 0.5, (y1 + y2) * 0.5)
-        line.Size = UDim2.fromOffset(1, len)
-        line.Rotation = -math.deg(math.atan2(dx, dy))
-        line.BackgroundColor3 = color
-        line.Visible = visible == true
-    end
-
-    local function UpdateBillboardESP(T, C)
-        local enabled = T.Enabled == true
-
-        -- Box
-        local boxVisible = enabled and T.Box == true
-        Box.Visible = boxVisible
-        BoxStroke.Color = getColor(C, "BoxMain", Color3.new(1, 1, 1))
-
-        if T.BoxType == "Corners" then
-            Box.Visible = false
-        end
-
-        -- Fill
-        FillBox.Visible = enabled and T.Box == true and T.FillBox == true
-        FillBox.BackgroundColor3 = getColor(C, "FillBox", Color3.new(1, 1, 1))
-
-        local fillTransparency = tonumber(C.FillBoxTransparency)
-        FillBox.BackgroundTransparency = fillTransparency == nil and 0.3 or math.clamp(fillTransparency, 0, 1)
-
-        -- HP
-        HPBack.Visible = enabled and T.HPBar == true
-        HPFill.Visible = HPBack.Visible
-        HPBack.BackgroundColor3 = getColor(C, "HealthMask", Color3.new(0, 0, 0))
-
-        local pct = math.clamp(lastHealth, 0, 1)
-        HPFill.Size = UDim2.new(1, 0, pct, 0)
-        HPFill.BackgroundColor3 = getColor(C, "HealthGradientEnd", Color3.new(0, 1, 0))
-
-        HPText.Visible = enabled and T.HPText == true
-        HPText.Text = tostring(math.floor(pct * 100))
-        HPText.TextColor3 = getColor(C, "HealthText", Color3.new(1, 1, 1))
-
-        -- Name
-        NameLbl.Visible = enabled and T.Name == true
-        NameLbl.Text = "Player"
-        NameLbl.TextColor3 = getColor(C, "Name", Color3.new(1, 1, 1))
-
-        -- Weapon
-        WepLbl.Visible = enabled and T.WeaponName == true
-        WepLbl.Text = "Hands"
-        WepLbl.TextColor3 = getColor(C, "WeaponName", Color3.new(1, 1, 1))
-
-        -- Distance
-        DistLbl.Visible = enabled and T.Distance == true
-        DistLbl.Text = T.Metric == "Meters" and "27 m" or "96 studs"
-        DistLbl.TextColor3 = getColor(C, "Distance", Color3.new(1, 1, 1))
-
-        -- Tracer
-        Tracer.Visible = enabled and T.Tracer == true
-        Tracer.BackgroundColor3 = getColor(C, "Tracer", Color3.new(1, 1, 1))
-
-        -- Skeleton
-        local skeletonVisible = enabled and T.Skeleton == true and T.BoxType ~= "Corners"
-        local skColor = getColor(C, "Skeleton", Color3.new(1, 1, 1))
-
-        local cx, cy = 0, 0
-        local pts = {
-            {0, -50, 0, -25},
-            {0, -25, 0, 20},
-            {0, -25, -15, -10},
-            {-15, -10, -22, 10},
-            {-22, 10, -25, 25},
-            {0, -25, 15, -10},
-            {15, -10, 22, 10},
-            {22, 10, 25, 25},
-            {0, 20, -10, 28},
-            {-10, 28, -13, 52},
-            {-13, 52, -15, 40},
-            {0, 20, 10, 28},
-            {10, 28, 13, 52},
-            {13, 52, 15, 40},
-        }
-
-        for i, p in ipairs(pts) do
-            setLine(
-                SkeletonParts[i],
-                p[1], p[2], p[3], p[4],
-                skColor,
-                skeletonVisible
-            )
-        end
-
-        -- Corners
-        if T.BoxType == "Corners" and boxVisible then
-            local col = getColor(C, "BoxMain", Color3.new(1, 1, 1))
-            local cw, ch = 16, 16
-
-            local data = {
-                {-38, -59, cw, 1},
-                {-38, -59, 1, ch},
-                {22, -59, cw, 1},
-                {37, -59, 1, ch},
-                {-38, 58, cw, 1},
-                {-38, 42, 1, ch},
-                {22, 58, cw, 1},
-                {37, 42, 1, ch},
-            }
-
-            for i, d in ipairs(data) do
-                local line = CornerLines[i]
-                line.Position = UDim2.new(0.5, d[1], 0.5, d[2])
-                line.Size = UDim2.fromOffset(d[3], d[4])
-                line.BackgroundColor3 = col
-                line.Visible = true
-            end
-        else
-            for _, line in ipairs(CornerLines) do
-                line.Visible = false
-            end
-        end
-    end
-
-    local function SyncMyESP()
-        if not ESP or not ESP.Toggles then
-            ESPRoot.Visible = false
-            return
-        end
-
-        ESPRoot.Visible = true
-        UpdateBillboardESP(ESP.Toggles, ESP.Colors or {})
-    end
-
-    -- ============================================================
-    -- PROJECT BILLBOARD ANCHOR INTO THE EXACT PANEL POSITION
-    -- ============================================================
-    local function updateBillboardPosition()
-        local cam = Workspace.CurrentCamera
-        if not cam then
-            return
-        end
-
-        local absPos = Container.AbsolutePosition
-        local absSize = Container.AbsoluteSize
-
-        local sx = absPos.X + absSize.X * 0.5
-        local sy = absPos.Y + absSize.Y * 0.5
-
-        local ray = cam:ViewportPointToRay(sx, sy)
-        Anchor.CFrame = CFrame.new(ray.Origin + ray.Direction * 12)
-
-        Billboard.Size = UDim2.fromOffset(math.max(1, absSize.X), math.max(1, absSize.Y))
-        Billboard.StudsOffset = Vector3.new(0, 0, 0)
-    end
-
-    -- ============================================================
-    -- INITIAL / RENDER
-    -- ============================================================
-    local PreviewLib = {}
-
+    -- ── Авто-обертання ────────────────────────────────────────
+    local autoSpin = true
     NeverLose:AddSignal(RunService.RenderStepped:Connect(function(dt)
         if not dragging and autoSpin then
-            rotY += dt * 22
+            rotY = rotY + dt * 20
             applyCamera()
         end
-
-        updateBillboardPosition()
-
-        if not ESP then
-            local ok, env = pcall(function()
-                return getgenv and getgenv()
-            end)
-            if ok and env then
-                ESP = env.__NeverLoseESP
-            end
-        end
-
-        if ESP then
-            SyncMyESP()
-        else
-            ESPRoot.Visible = false
-        end
     end))
 
-    local function SetRender(value)
-        Container.Visible = value
-        Billboard.Enabled = value
-        autoSpin = value
-        ESPRoot.Visible = value
+    -- ── ESP Overlay ───────────────────────────────────────────
+    local OL = Instance.new("Frame", Container)
+    OL.Size = UDim2.new(1,0,1,-16)
+    OL.Position = UDim2.new(0,0,0,16)
+    OL.BackgroundTransparency = 1
+    OL.BorderSizePixel = 0
+    OL.ZIndex = LayerIndex + 12
+
+    local bW, bH = 68, 128
+    local cx, cy = 0.5, 0.5
+
+    -- Бокс
+    local BoxF = Instance.new("Frame", OL)
+    BoxF.AnchorPoint = Vector2.new(0.5, 0.5)
+    BoxF.Position = UDim2.new(cx, 0, cy, 0)
+    BoxF.Size = UDim2.fromOffset(bW, bH)
+    BoxF.BackgroundTransparency = 1
+    BoxF.BorderSizePixel = 0
+    BoxF.Visible = false
+    BoxF.ZIndex = LayerIndex + 13
+    local BoxStroke = Instance.new("UIStroke", BoxF)
+    BoxStroke.Thickness = 1.5
+    BoxStroke.Color = Color3.new(1,1,1)
+
+    -- Fill box
+    local FillF = Instance.new("Frame", OL)
+    FillF.AnchorPoint = Vector2.new(0.5, 0.5)
+    FillF.Position = UDim2.new(cx, 0, cy, 0)
+    FillF.Size = UDim2.fromOffset(bW, bH)
+    FillF.BackgroundColor3 = Color3.new(1,1,1)
+    FillF.BackgroundTransparency = 0.7
+    FillF.BorderSizePixel = 0
+    FillF.Visible = false
+    FillF.ZIndex = LayerIndex + 12
+
+    -- Health bar
+    local HpBg = Instance.new("Frame", OL)
+    HpBg.AnchorPoint = Vector2.new(1, 0.5)
+    HpBg.Position = UDim2.new(cx, -(bW/2)-5, cy, 0)
+    HpBg.Size = UDim2.fromOffset(4, bH)
+    HpBg.BackgroundColor3 = Color3.fromRGB(18,18,18)
+    HpBg.BorderSizePixel = 0
+    HpBg.Visible = false
+    HpBg.ZIndex = LayerIndex + 13
+    local _hbc = Instance.new("UICorner",HpBg) _hbc.CornerRadius=UDim.new(1,0)
+
+    local HpFill = Instance.new("Frame", HpBg)
+    HpFill.AnchorPoint = Vector2.new(0,1)
+    HpFill.Position = UDim2.new(0,0,1,0)
+    HpFill.Size = UDim2.new(1,0,1,0)
+    HpFill.BackgroundColor3 = Color3.fromRGB(80,210,100)
+    HpFill.BorderSizePixel = 0
+    HpFill.ZIndex = LayerIndex+14
+    local _hfc = Instance.new("UICorner",HpFill) _hfc.CornerRadius=UDim.new(1,0)
+
+    -- Name
+    local NameL = Instance.new("TextLabel", OL)
+    NameL.AnchorPoint = Vector2.new(0.5,1)
+    NameL.Position = UDim2.new(cx,0,cy,-(bH/2)-4)
+    NameL.Size = UDim2.fromOffset(140,16)
+    NameL.BackgroundTransparency = 1
+    NameL.Text = "Player"
+    NameL.TextColor3 = Color3.new(1,1,1)
+    NameL.Font = Enum.Font.GothamMedium
+    NameL.TextSize = 12
+    NameL.Visible = false
+    NameL.ZIndex = LayerIndex+14
+    local _nls=Instance.new("UIStroke",NameL) _nls.Color=Color3.new(0,0,0) _nls.Thickness=1.2
+
+    -- Distance
+    local DistL = Instance.new("TextLabel", OL)
+    DistL.AnchorPoint = Vector2.new(0.5,0)
+    DistL.Position = UDim2.new(cx,0,cy,(bH/2)+4)
+    DistL.Size = UDim2.fromOffset(140,14)
+    DistL.BackgroundTransparency = 1
+    DistL.Text = "25 м"
+    DistL.TextColor3 = Color3.fromRGB(200,200,200)
+    DistL.Font = Enum.Font.GothamMedium
+    DistL.TextSize = 11
+    DistL.Visible = false
+    DistL.ZIndex = LayerIndex+14
+    local _dls=Instance.new("UIStroke",DistL) _dls.Color=Color3.new(0,0,0) _dls.Thickness=1
+
+    -- Weapon
+    local WepL = Instance.new("TextLabel", OL)
+    WepL.AnchorPoint = Vector2.new(0.5,0)
+    WepL.Position = UDim2.new(cx,0,cy,(bH/2)+20)
+    WepL.Size = UDim2.fromOffset(140,14)
+    WepL.BackgroundTransparency = 1
+    WepL.Text = "M9"
+    WepL.TextColor3 = Color3.fromRGB(160,210,255)
+    WepL.Font = Enum.Font.GothamMedium
+    WepL.TextSize = 11
+    WepL.Visible = false
+    WepL.ZIndex = LayerIndex+14
+    local _wls=Instance.new("UIStroke",WepL) _wls.Color=Color3.new(0,0,0) _wls.Thickness=1
+
+    -- Tracer
+    local TracerL = Instance.new("Frame", OL)
+    TracerL.AnchorPoint = Vector2.new(0.5,1)
+    TracerL.Position = UDim2.new(0.5,0,1,0)
+    TracerL.Size = UDim2.fromOffset(1, (height-16)/2 - bH/2)
+    TracerL.BackgroundColor3 = Color3.new(1,1,1)
+    TracerL.BorderSizePixel = 0
+    TracerL.Visible = false
+    TracerL.ZIndex = LayerIndex+13
+
+    -- Chams / Glow
+    local chamHL, glowHL = nil, nil
+    local function applyChams(mode, col)
+        if chamHL then chamHL:Destroy() chamHL=nil end
+        if not mode or mode=="Off" or not charClone then return end
+        chamHL = Instance.new("Highlight")
+        chamHL.Adornee = charClone
+        chamHL.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        chamHL.FillColor = col or Color3.fromRGB(75,125,254)
+        chamHL.OutlineColor = Color3.fromRGB(255,255,255)
+        chamHL.FillTransparency = (mode=="Glow") and 0.8 or 0.5
+        chamHL.OutlineTransparency = 0.2
+        chamHL.Parent = WorldModel
+    end
+    local function applyGlow(en, col)
+        if glowHL then glowHL:Destroy() glowHL=nil end
+        if not en or not charClone then return end
+        glowHL = Instance.new("Highlight")
+        glowHL.Adornee = charClone
+        glowHL.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        glowHL.FillTransparency = 1
+        glowHL.OutlineColor = col or Color3.fromRGB(75,125,254)
+        glowHL.OutlineTransparency = 0
+        glowHL.Parent = WorldModel
     end
 
-    PreviewLib.SetRender = SetRender
+    -- SetRender
+    local Lib = {}
+    Lib.SetRender = function(v) Container.Visible=v autoSpin=v end
+    Lib.SetRender(Signel:GetValue())
+    Signel:Connect(Lib.SetRender)
 
-    if Signel then
-        SetRender(Signel:GetValue())
-        Signel:Connect(SetRender)
+    function Lib:SetBox(en, col)
+        BoxF.Visible = en or false
+        if col then BoxStroke.Color=col end
     end
-
-    function PreviewLib:SetMaster(v)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Enabled = v
+    function Lib:SetFillBox(en, col)
+        FillF.Visible = en or false
+        if col then FillF.BackgroundColor3=col end
+    end
+    function Lib:SetFillTransparency(t)
+        FillF.BackgroundTransparency = 1-(t or 0.3)
+    end
+    function Lib:SetHealth(en, colors)
+        HpBg.Visible = en or false
+        if colors then
+            HpFill.BackgroundColor3 = colors[1] or Color3.fromRGB(80,210,100)
         end
-        SyncMyESP()
     end
-
-    function PreviewLib:SetBox(enabled, color)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Box = enabled
-            if color and ESP.Colors then
-                ESP.Colors.BoxMain = color
-            end
-        end
-        SyncMyESP()
+    function Lib:SetHealthPercent(pct)
+        local p = math.clamp(pct or 1, 0, 1)
+        HpFill.Size = UDim2.new(1,0,p,0)
+        HpFill.BackgroundColor3 = Color3.fromHSV(p*0.33, 0.85, 0.9)
     end
-
-    function PreviewLib:SetHealth(enabled, colors)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.HPBar = enabled
-            if colors and ESP.Colors then
-                ESP.Colors.HealthGradientEnd = colors[1] or ESP.Colors.HealthGradientEnd
-                ESP.Colors.HealthGradientMid = colors[2] or ESP.Colors.HealthGradientMid
-                ESP.Colors.HealthGradientStart = colors[3] or ESP.Colors.HealthGradientStart
-            end
-        end
-        SyncMyESP()
+    function Lib:SetName(en, col, text)
+        NameL.Visible = en or false
+        if col then NameL.TextColor3=col end
+        if text then NameL.Text=text end
     end
-
-    function PreviewLib:SetName(enabled, color)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Name = enabled
-            if color and ESP.Colors then
-                ESP.Colors.Name = color
-            end
-        end
-        SyncMyESP()
+    function Lib:SetDistance(en, col, text)
+        DistL.Visible = en or false
+        if col then DistL.TextColor3=col end
+        if text then DistL.Text=text end
     end
-
-    function PreviewLib:SetChams(mode, color)
-        if applyChams then
-            applyChams(mode, color)
-        end
+    function Lib:SetWeapon(en, col, text)
+        WepL.Visible = en or false
+        if col then WepL.TextColor3=col end
+        if text then WepL.Text=text end
     end
-
-    function PreviewLib:SetGlow(enabled, color)
-        if applyGlow then
-            applyGlow(enabled, color)
-        end
+    function Lib:SetTracer(en, col)
+        TracerL.Visible = en or false
+        if col then TracerL.BackgroundColor3=col end
     end
+    function Lib:SetChams(mode, col) applyChams(mode, col) end
+    function Lib:SetGlow(en, col) applyGlow(en, col) end
+    function Lib:RefreshChar() loadCharacter() end
 
-    function PreviewLib:SetNameText(text)
-        NameLbl.Text = text or "Player"
-    end
-
-    function PreviewLib:SetWeapon(weapon, visible)
-        WepLbl.Text = weapon or "Hands"
-
-        if ESP and ESP.Toggles then
-            ESP.Toggles.WeaponName = visible == true
-        end
-
-        SyncMyESP()
-    end
-
-    function PreviewLib:SetDistance(enabled, color)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Distance = enabled
-            if color and ESP.Colors then
-                ESP.Colors.Distance = color
-            end
-        end
-        SyncMyESP()
-    end
-
-    function PreviewLib:SetTracer(enabled, color)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Tracer = enabled
-            if color and ESP.Colors then
-                ESP.Colors.Tracer = color
-            end
-        end
-        SyncMyESP()
-    end
-
-    function PreviewLib:SetSkeleton(enabled, color)
-        if ESP and ESP.Toggles then
-            ESP.Toggles.Skeleton = enabled
-            if color and ESP.Colors then
-                ESP.Colors.Skeleton = color
-            end
-        end
-        SyncMyESP()
-    end
-
-    function PreviewLib:SetAutoSpin(v)
-        autoSpin = v == true
-    end
-
-    function PreviewLib:SetMeshColor(color)
-        if typeof(color) == "Color3" then
-            CharPart.Color = color
-        end
-    end
-
-    function PreviewLib:SetHealthPercent(pct)
-        lastHealth = math.clamp(pct or 1, 0, 1)
-
-        if ESP and ESP.Colors then
-            updateHealthGradient(ESP.Colors, lastHealth)
-        end
-
-        SyncMyESP()
-    end
-
-    function PreviewLib:SyncESP(esp)
-        if esp then
-            ESP = esp
-        end
-        SyncMyESP()
-    end
-
-    -- Cleanup.
-    NeverLose:AddSignal(Container.AncestryChanged:Connect(function(_, parent)
-        if parent then
-            return
-        end
-
-        pcall(function()
-            Billboard:Destroy()
-        end)
-
-        pcall(function()
-            Anchor:Destroy()
-        end)
-    end))
-
-    return PreviewLib
+    return Lib
 end
+
+
+-- ════════════════════════════════════════════════════════════
+-- [ЧАСТИНА B] ПОВНИЙ ESP БЛОК — замінює твій поточний
+-- Вставити там де у тебе task.spawn(function() ... end)
+-- Змінна PlayerESPSection має вже існувати
+-- ════════════════════════════════════════════════════════════
+
+task.spawn(function()
+local Cheat = {
+    Toggles = {
+        Enabled         = false,
+        Box             = false,
+        Name            = false,
+        Distance        = false,
+        WeaponName      = false,
+        HPBar           = false,
+        HPText          = false,
+        Skeleton        = false,
+        FillBox         = false,
+        Tracer          = false,
+        BoxType         = "Boxes",
+        Metric          = "Meters",
+        UseDisplayName  = true,
+        MaxDistance     = 5000,
+    },
+    Colors = {
+        BoxOuter = Color3.new(0,0,0),
+        BoxMain  = Color3.new(1,1,1),
+        BoxInner = Color3.new(0,0,0),
+        FillBox  = Color3.new(1,1,1),
+        FillBoxTransparency = 0.3,
+        Name     = Color3.new(1,1,1),
+        Distance = Color3.new(1,1,1),
+        WeaponName = Color3.fromRGB(255,255,255),
+        HealthText = Color3.new(1,1,1),
+        HealthGradientStart = Color3.fromRGB(255,80,80),
+        HealthGradientMid   = Color3.fromRGB(255,220,0),
+        HealthGradientEnd   = Color3.fromRGB(80,220,80),
+        HealthMask = Color3.new(0,0,0),
+        HealthMaskTransparency = 0.3,
+        Skeleton = Color3.new(1,1,1),
+        SkeletonTransparency = 0,
+        Tracer = Color3.new(1,1,1),
+    },
+    Connections = {},
+    Boxes = {},
+}
+
+local Gui = Instance.new("ScreenGui")
+Gui.DisplayOrder = 9e9
+Gui.ResetOnSpawn = false
+Gui.Parent = gethui and gethui() or game:GetService("CoreGui")
+Gui.Enabled = false
+
+local PlayersService = cloneref(game:GetService("Players"))
+local LocalPlayer   = PlayersService.LocalPlayer
+local Camera        = workspace.CurrentCamera
+local RunSvc        = cloneref(game:GetService("RunService"))
+
+local function Cleanup(player)
+    if Cheat.Boxes[player] then
+        for _, obj in pairs(Cheat.Boxes[player]) do
+            if typeof(obj) == "Instance" then pcall(function() obj:Destroy() end)
+            elseif typeof(obj) == "table" and obj.Lines then
+                for _, l in ipairs(obj.Lines) do if l.Remove then l:Remove() end end
+            elseif typeof(obj) == "userdata" and obj.Remove then obj:Remove() end
+        end
+        Cheat.Boxes[player] = nil
+    end
+end
+Cheat.Connections.PlayerRemoving = PlayersService.PlayerRemoving:Connect(Cleanup)
+
+local function CreateBox()
+    local b = {}
+    for _, n in ipairs({"Outer","Main","Inner"}) do
+        local f = Instance.new("Frame")
+        f.BackgroundTransparency = 1 f.Parent = Gui
+        local s = Instance.new("UIStroke", f) s.Thickness = 1
+        b[n] = f b[n.."Stroke"] = s
+    end
+    b.OuterStroke.Color = Cheat.Colors.BoxOuter
+    b.MainStroke.Color  = Cheat.Colors.BoxMain
+    b.InnerStroke.Color = Cheat.Colors.BoxInner
+
+    local ff = Instance.new("Frame")
+    ff.BackgroundColor3 = Cheat.Colors.FillBox
+    ff.BackgroundTransparency = 1-Cheat.Colors.FillBoxTransparency
+    ff.BorderSizePixel = 0 ff.Visible = false ff.Parent = Gui
+    b.FillBox = ff
+
+    local hbg = Instance.new("Frame")
+    hbg.BackgroundTransparency = 0 hbg.BorderSizePixel = 0 hbg.Parent = Gui
+    local grad = Instance.new("UIGradient", hbg)
+    grad.Rotation = 90
+    local function updateGrad()
+        grad.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0,   Cheat.Colors.HealthGradientStart),
+            ColorSequenceKeypoint.new(0.5, Cheat.Colors.HealthGradientMid),
+            ColorSequenceKeypoint.new(1,   Cheat.Colors.HealthGradientEnd)
+        })
+    end
+    updateGrad()
+    b.UpdateGradient = updateGrad
+
+    local hmask = Instance.new("Frame")
+    hmask.BackgroundColor3 = Cheat.Colors.HealthMask
+    hmask.BackgroundTransparency = Cheat.Colors.HealthMaskTransparency
+    hmask.BorderSizePixel = 0 hmask.Parent = hbg hmask.ZIndex = hbg.ZIndex+1
+    local hbgs = Instance.new("UIStroke", hbg) hbgs.Color=Color3.new(0,0,0) hbgs.Thickness=1
+
+    local function mkLabel(parent, size, xs)
+        local l = Instance.new("TextLabel")
+        l.BackgroundTransparency=1 l.Text="" l.TextSize=size
+        l.FontFace=Font.fromEnum(Enum.Font.SourceSans)
+        l.TextStrokeTransparency=0 l.TextStrokeColor3=Color3.new(0,0,0)
+        if xs then l.TextXAlignment=xs end
+        l.Parent=parent return l
+    end
+    local nl = mkLabel(Gui,12) nl.TextColor3=Cheat.Colors.Name
+    local hl = mkLabel(Gui,10,Enum.TextXAlignment.Right) hl.TextColor3=Cheat.Colors.HealthText
+    local dl = mkLabel(Gui,12,Enum.TextXAlignment.Center) dl.TextColor3=Cheat.Colors.Distance
+    local tl = mkLabel(Gui,12,Enum.TextXAlignment.Center) tl.TextColor3=Cheat.Colors.WeaponName
+
+    local skCont = Instance.new("Frame")
+    skCont.BackgroundTransparency=1 skCont.Size=UDim2.new(1,0,1,0) skCont.Parent=Gui
+    b.SkeletonLines = {}
+    for i=1,20 do
+        local l=Instance.new("Frame") l.BackgroundColor3=Cheat.Colors.Skeleton
+        l.BackgroundTransparency=Cheat.Colors.SkeletonTransparency
+        l.BorderSizePixel=0 l.Visible=false l.Parent=skCont
+        b.SkeletonLines[i]=l
+    end
+    b.SkeletonContainer = skCont
+
+    local trCont = Instance.new("Frame")
+    trCont.BackgroundTransparency=1 trCont.Size=UDim2.new(1,0,1,0) trCont.Parent=Gui
+    b.TracerLine = Instance.new("Frame")
+    b.TracerLine.BackgroundColor3=Cheat.Colors.Tracer
+    b.TracerLine.BorderSizePixel=0 b.TracerLine.Visible=false b.TracerLine.Parent=trCont
+    b.TracerContainer = trCont
+
+    b.HealthBg=hbg b.HealthMask=hmask b.NameLabel=nl b.HealthText=hl b.DistanceLabel=dl b.ToolLabel=tl
+    b.LastTool=nil b.VisualHealth=nil
+    return b
+end
+
+local function DrawLine(lf, a, b2, th)
+    if not a or not b2 then lf.Visible=false return end
+    local c=(a+b2)/2 local d=(b2-a).Magnitude
+    lf.Position=UDim2.fromOffset(c.X-d/2,c.Y-th/2)
+    lf.Size=UDim2.fromOffset(d,th)
+    lf.Rotation=math.deg(math.atan2(b2.Y-a.Y,b2.X-a.X))
+    lf.Visible=true
+end
+
+local function SetBoxVis(esp, v)
+    if not esp then return end
+    esp.Outer.Visible=v esp.Main.Visible=v esp.Inner.Visible=v
+    esp.FillBox.Visible=v and Cheat.Toggles.FillBox
+    if esp.SkeletonLines then for _,l in pairs(esp.SkeletonLines) do l.Visible=v and Cheat.Toggles.Skeleton end end
+    if esp.TracerLine then esp.TracerLine.Visible=v and Cheat.Toggles.Tracer end
+end
+
+-- ── Превью ───────────────────────────────────────────────────
+local preview = PlayerESPSection:AddPlayerPreview({Height = 210})
+
+-- ── ESP Loop ──────────────────────────────────────────────────
+local function Loop()
+    while task.wait() do
+        if not Cheat.Toggles.Enabled then
+            if Gui.Enabled then Gui.Enabled=false end
+            for _,esp in pairs(Cheat.Boxes) do
+                if esp then
+                    if esp.SkeletonLines then for _,l in pairs(esp.SkeletonLines) do l.Visible=false end end
+                    if esp.TracerLine then esp.TracerLine.Visible=false end
+                end
+            end
+            continue
+        end
+        Gui.Enabled=true
+
+        local lpChar=LocalPlayer.Character
+        local lpRoot=lpChar and lpChar:FindFirstChild("HumanoidRootPart")
+        local vs=Camera.ViewportSize
+        local sc=Vector2.new(vs.X/2, vs.Y)
+
+        for _,player in ipairs(PlayersService:GetPlayers()) do
+            if player==LocalPlayer then continue end
+            local char=player.Character
+            local hum=char and char:FindFirstChildOfClass("Humanoid")
+            local root=char and char:FindFirstChild("HumanoidRootPart")
+            if not char or not root or not hum or hum.Health<=0 then
+                if Cheat.Boxes[player] then Cleanup(player) end
+                continue
+            end
+            if lpRoot and (lpRoot.Position-root.Position).Magnitude>Cheat.Toggles.MaxDistance then
+                if Cheat.Boxes[player] then Cleanup(player) end
+                continue
+            end
+            local esp=Cheat.Boxes[player]
+            local cf,sz=char:GetBoundingBox()
+            if not cf then if esp then Cleanup(player) end continue end
+            local hs=sz/2
+            local corners={
+                cf*Vector3.new(hs.X,hs.Y,hs.Z),cf*Vector3.new(hs.X,hs.Y,-hs.Z),
+                cf*Vector3.new(hs.X,-hs.Y,hs.Z),cf*Vector3.new(hs.X,-hs.Y,-hs.Z),
+                cf*Vector3.new(-hs.X,hs.Y,hs.Z),cf*Vector3.new(-hs.X,hs.Y,-hs.Z),
+                cf*Vector3.new(-hs.X,-hs.Y,hs.Z),cf*Vector3.new(-hs.X,-hs.Y,-hs.Z)
+            }
+            local l,t,r,b2=math.huge,math.huge,-math.huge,-math.huge
+            local onScreen=false
+            for i=1,8 do
+                local sp,vis=Camera:WorldToScreenPoint(corners[i])
+                if vis then onScreen=true l=math.min(l,sp.X) t=math.min(t,sp.Y) r=math.max(r,sp.X) b2=math.max(b2,sp.Y) end
+            end
+
+            if onScreen then
+                if not esp then esp=CreateBox() Cheat.Boxes[player]=esp end
+                SetBoxVis(esp,true)
+                l=math.floor(l) t=math.floor(t) r=math.ceil(r) b2=math.ceil(b2)
+                local ins=(b2-t)*0.04 l=l+ins t=t+ins r=r-ins b2=b2-ins
+                local w,h=r-l,b2-t
+                local bty,tbh=t-1,h+2
+                esp.Outer.Position=UDim2.fromOffset(l-1,bty) esp.Outer.Size=UDim2.fromOffset(w+2,tbh)
+                esp.Main.Position=UDim2.fromOffset(l,t) esp.Main.Size=UDim2.fromOffset(w,h)
+                esp.Inner.Position=UDim2.fromOffset(l+1,t+1) esp.Inner.Size=UDim2.fromOffset(w-2,h-2)
+                esp.FillBox.Position=UDim2.fromOffset(l,t) esp.FillBox.Size=UDim2.fromOffset(w,h)
+                esp.FillBox.Visible=Cheat.Toggles.FillBox and Cheat.Toggles.Box
+                local yOff=t-18
+                if Cheat.Toggles.Name then
+                    local dn=Cheat.Toggles.UseDisplayName and player.DisplayName or player.Name
+                    esp.NameLabel.Text=dn esp.NameLabel.Position=UDim2.fromOffset(l-1,yOff)
+                    esp.NameLabel.Size=UDim2.fromOffset(w+2,12) esp.NameLabel.Visible=true yOff=yOff-14
+                else esp.NameLabel.Visible=false end
+                local bot=b2+2
+                local eq=char:FindFirstChild("Equipped")
+                local item=eq and eq:FindFirstChildOfClass("Model")
+                local tn=item and item.Name or "Hands"
+                if tn~=esp.LastTool then esp.ToolLabel.Text=tn esp.LastTool=tn end
+                esp.ToolLabel.Visible=Cheat.Toggles.WeaponName
+                if esp.ToolLabel.Visible then esp.ToolLabel.Position=UDim2.fromOffset(l-1,bot) esp.ToolLabel.Size=UDim2.fromOffset(w+2,12) bot=bot+14 end
+                if Cheat.Toggles.Distance and lpRoot then
+                    local ds=(lpRoot.Position-root.Position).Magnitude
+                    local dv=Cheat.Toggles.Metric=="Meters" and math.floor(ds*0.28) or math.floor(ds)
+                    local un=Cheat.Toggles.Metric=="Meters" and "м" or "s"
+                    esp.DistanceLabel.Text=dv..un esp.DistanceLabel.Position=UDim2.fromOffset(l-1,bot)
+                    esp.DistanceLabel.Size=UDim2.fromOffset(w+2,12) esp.DistanceLabel.Visible=true bot=bot+14
+                else esp.DistanceLabel.Visible=false end
+                if Cheat.Toggles.HPBar or Cheat.Toggles.HPText then
+                    local pct=hum.Health/hum.MaxHealth
+                    if esp.VisualHealth==nil then esp.VisualHealth=pct end
+                    esp.VisualHealth=esp.VisualHealth+(pct-esp.VisualHealth)*0.1
+                    esp.HealthText.Text=tostring(math.floor(hum.Health))
+                    local bw=2 local mh=tbh*(1-esp.VisualHealth)
+                    esp.HealthText.Position=UDim2.fromOffset(l-bw-30,bty+mh+3-5) esp.HealthText.Size=UDim2.fromOffset(18,10) esp.HealthText.Visible=Cheat.Toggles.HPText
+                    esp.HealthBg.Position=UDim2.fromOffset(l-bw-6,bty) esp.HealthBg.Size=UDim2.fromOffset(bw,tbh)
+                    esp.HealthMask.Position=UDim2.fromOffset(0,0) esp.HealthMask.Size=UDim2.fromOffset(bw,mh)
+                    esp.HealthBg.Visible=Cheat.Toggles.HPBar
+                else esp.HealthBg.Visible=false esp.HealthText.Visible=false end
+                if Cheat.Toggles.Skeleton and esp.SkeletonLines then
+                    local pts={Head=char:FindFirstChild("Head"),UpperTorso=char:FindFirstChild("UpperTorso"),LowerTorso=char:FindFirstChild("LowerTorso"),LeftUpperArm=char:FindFirstChild("LeftUpperArm") or char:FindFirstChild("Left Arm"),LeftLowerArm=char:FindFirstChild("LeftLowerArm"),LeftHand=char:FindFirstChild("LeftHand"),RightUpperArm=char:FindFirstChild("RightUpperArm") or char:FindFirstChild("Right Arm"),RightLowerArm=char:FindFirstChild("RightLowerArm"),RightHand=char:FindFirstChild("RightHand"),LeftUpperLeg=char:FindFirstChild("LeftUpperLeg") or char:FindFirstChild("Left Leg"),LeftLowerLeg=char:FindFirstChild("LeftLowerLeg"),LeftFoot=char:FindFirstChild("LeftFoot"),RightUpperLeg=char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg"),RightLowerLeg=char:FindFirstChild("RightLowerLeg"),RightFoot=char:FindFirstChild("RightFoot")}
+                    local pos={} for n,p in pairs(pts) do if p then local sp2,v2=Camera:WorldToViewportPoint(p.Position) pos[n]=v2 and Vector2.new(sp2.X,sp2.Y) or nil end end
+                    local li=1 local function dl2(a2,b3) if a2 and b3 and esp.SkeletonLines[li] then DrawLine(esp.SkeletonLines[li],a2,b3,1) esp.SkeletonLines[li].BackgroundColor3=Cheat.Colors.Skeleton esp.SkeletonLines[li].BackgroundTransparency=Cheat.Colors.SkeletonTransparency li=li+1 end end
+                    dl2(pos.Head,pos.UpperTorso) dl2(pos.UpperTorso,pos.LowerTorso) dl2(pos.UpperTorso,pos.LeftUpperArm) if pos.LeftLowerArm then dl2(pos.LeftUpperArm,pos.LeftLowerArm) end if pos.LeftHand then dl2(pos.LeftLowerArm or pos.LeftUpperArm,pos.LeftHand) end dl2(pos.UpperTorso,pos.RightUpperArm) if pos.RightLowerArm then dl2(pos.RightUpperArm,pos.RightLowerArm) end if pos.RightHand then dl2(pos.RightLowerArm or pos.RightUpperArm,pos.RightHand) end dl2(pos.LowerTorso,pos.LeftUpperLeg) if pos.LeftLowerLeg then dl2(pos.LeftUpperLeg,pos.LeftLowerLeg) end if pos.LeftFoot then dl2(pos.LeftLowerLeg or pos.LeftUpperLeg,pos.LeftFoot) end dl2(pos.LowerTorso,pos.RightUpperLeg) if pos.RightLowerLeg then dl2(pos.RightUpperLeg,pos.RightLowerLeg) end if pos.RightFoot then dl2(pos.RightLowerLeg or pos.RightUpperLeg,pos.RightFoot) end
+                    for i=li,#esp.SkeletonLines do esp.SkeletonLines[i].Visible=false end
+                else if esp and esp.SkeletonLines then for _,l in pairs(esp.SkeletonLines) do l.Visible=false end end end
+                if Cheat.Toggles.Tracer and esp.TracerLine and root then
+                    local sp3,on3=Camera:WorldToViewportPoint(root.Position)
+                    if on3 then DrawLine(esp.TracerLine,sc,Vector2.new(sp3.X,sp3.Y),1) esp.TracerLine.BackgroundColor3=Cheat.Colors.Tracer esp.TracerLine.Visible=true else esp.TracerLine.Visible=false end
+                else if esp and esp.TracerLine then esp.TracerLine.Visible=false end end
+                esp.Outer.Visible=Cheat.Toggles.Box esp.Main.Visible=Cheat.Toggles.Box esp.Inner.Visible=Cheat.Toggles.Box
+            else
+                if esp then SetBoxVis(esp,false) esp.DistanceLabel.Visible=false esp.NameLabel.Visible=false esp.HealthText.Visible=false esp.HealthBg.Visible=false esp.ToolLabel.Visible=false end
+            end
+        end
+    end
+end
+coroutine.wrap(Loop)()
+
+-- ── UI + Preview прив'язка ────────────────────────────────────
+
+-- Enable ESP
+local espToggle = PlayerESPSection:AddLabel('Enable ESP')
+espToggle:AddToggle({Default=false, Flag="enable esp",
+    Callback=function(v) Cheat.Toggles.Enabled=v preview:SetBox(Cheat.Toggles.Box, Cheat.Colors.BoxMain) end})
+
+-- Box
+local boxToggle = PlayerESPSection:AddLabel('Box')
+boxToggle:AddToggle({Default=false, Flag="box",
+    Callback=function(v) Cheat.Toggles.Box=v preview:SetBox(v, Cheat.Colors.BoxMain) end})
+local boxOpt = boxToggle:AddOption()
+boxOpt:AddLabel('Box Color'):AddColorPicker({Default=Cheat.Colors.BoxMain, Flag="color box",
+    Callback=function(v) Cheat.Colors.BoxMain=v for _,e in pairs(Cheat.Boxes) do if e.MainStroke then e.MainStroke.Color=v end end preview:SetBox(Cheat.Toggles.Box,v) end})
+boxOpt:AddLabel('Fill Box'):AddToggle({Default=false, Flag="fill box",
+    Callback=function(v) Cheat.Toggles.FillBox=v preview:SetFillBox(v,Cheat.Colors.FillBox) end})
+boxOpt:AddLabel('Fill Color'):AddColorPicker({Default=Cheat.Colors.FillBox, Flag="color fill box",
+    Callback=function(v) Cheat.Colors.FillBox=v for _,e in pairs(Cheat.Boxes) do if e.FillBox then e.FillBox.BackgroundColor3=v end end preview:SetFillBox(Cheat.Toggles.FillBox,v) end})
+boxOpt:AddLabel('Fill Transparency'):AddSlider({Min=1,Max=9,Default=7,Rounding=0,
+    Callback=function(v) Cheat.Colors.FillBoxTransparency=v/10 preview:SetFillTransparency(v/10) end})
+
+-- Health Bar
+local hpToggle = PlayerESPSection:AddLabel('Health Bar')
+hpToggle:AddToggle({Default=false, Flag="box bar",
+    Callback=function(v) Cheat.Toggles.HPBar=v preview:SetHealth(v) end})
+local hpOpt = hpToggle:AddOption()
+hpOpt:AddLabel('Low Health Color'):AddColorPicker({Default=Cheat.Colors.HealthGradientStart, Flag="color hp low",
+    Callback=function(v) Cheat.Colors.HealthGradientStart=v for _,e in pairs(Cheat.Boxes) do if e.UpdateGradient then e.UpdateGradient() end end end})
+hpOpt:AddLabel('Mid Health Color'):AddColorPicker({Default=Cheat.Colors.HealthGradientMid, Flag="color hp mid",
+    Callback=function(v) Cheat.Colors.HealthGradientMid=v for _,e in pairs(Cheat.Boxes) do if e.UpdateGradient then e.UpdateGradient() end end end})
+hpOpt:AddLabel('Full Health Color'):AddColorPicker({Default=Cheat.Colors.HealthGradientEnd, Flag="color hp full",
+    Callback=function(v) Cheat.Colors.HealthGradientEnd=v for _,e in pairs(Cheat.Boxes) do if e.UpdateGradient then e.UpdateGradient() end end end})
+hpOpt:AddLabel('Health Number'):AddToggle({Default=false, Flag="box number hear",
+    Callback=function(v) Cheat.Toggles.HPText=v end})
+
+-- Name
+local nameToggle = PlayerESPSection:AddLabel('Show Name')
+nameToggle:AddToggle({Default=false, Flag="box name",
+    Callback=function(v) Cheat.Toggles.Name=v preview:SetName(v,Cheat.Colors.Name) end})
+local nameOpt = nameToggle:AddOption()
+nameOpt:AddLabel('Name Color'):AddColorPicker({Default=Cheat.Colors.Name, Flag="color name",
+    Callback=function(v) Cheat.Colors.Name=v for _,e in pairs(Cheat.Boxes) do if e.NameLabel then e.NameLabel.TextColor3=v end end preview:SetName(Cheat.Toggles.Name,v) end})
+nameOpt:AddLabel('Use Display Name'):AddToggle({Default=true, Flag="use display name",
+    Callback=function(v) Cheat.Toggles.UseDisplayName=v end})
+
+-- Distance
+local distToggle = PlayerESPSection:AddLabel('Distance')
+distToggle:AddToggle({Default=false, Flag="box dist",
+    Callback=function(v) Cheat.Toggles.Distance=v preview:SetDistance(v,Cheat.Colors.Distance,"25 м") end})
+local distOpt = distToggle:AddOption()
+distOpt:AddLabel('Distance Color'):AddColorPicker({Default=Cheat.Colors.Distance, Flag="color dist",
+    Callback=function(v) Cheat.Colors.Distance=v for _,e in pairs(Cheat.Boxes) do if e.DistanceLabel then e.DistanceLabel.TextColor3=v end end preview:SetDistance(Cheat.Toggles.Distance,v) end})
+distOpt:AddLabel('Metric'):AddDropdown({Default=Cheat.Toggles.Metric, Values={'Meters','Studs'}, Flag="metric",
+    Callback=function(v) Cheat.Toggles.Metric=v end})
+distOpt:AddLabel('Max Distance'):AddSlider({Min=1000,Max=10000,Default=5000,Rounding=0, Flag="dis chek",
+    Callback=function(v) Cheat.Toggles.MaxDistance=v end})
+
+-- Weapon
+local wepToggle = PlayerESPSection:AddLabel('Equipped Item')
+wepToggle:AddToggle({Default=false, Flag="box item",
+    Callback=function(v) Cheat.Toggles.WeaponName=v preview:SetWeapon(v,Cheat.Colors.WeaponName,"M9") end})
+wepToggle:AddOption():AddLabel('Item Color'):AddColorPicker({Default=Cheat.Colors.WeaponName, Flag="color item",
+    Callback=function(v) Cheat.Colors.WeaponName=v for _,e in pairs(Cheat.Boxes) do if e.ToolLabel then e.ToolLabel.TextColor3=v end end preview:SetWeapon(Cheat.Toggles.WeaponName,v) end})
+
+-- Skeleton
+local skelToggle = PlayerESPSection:AddLabel('Skeleton')
+skelToggle:AddToggle({Default=false, Flag="skeleton",
+    Callback=function(v) Cheat.Toggles.Skeleton=v end})
+skelToggle:AddOption():AddLabel('Skeleton Color'):AddColorPicker({Default=Cheat.Colors.Skeleton, Flag="color skeleton",
+    Callback=function(v) Cheat.Colors.Skeleton=v end})
+
+-- Tracer
+local tracerToggle = PlayerESPSection:AddLabel('Tracer')
+tracerToggle:AddToggle({Default=false, Flag="tracer",
+    Callback=function(v) Cheat.Toggles.Tracer=v preview:SetTracer(v,Cheat.Colors.Tracer) end})
+tracerToggle:AddOption():AddLabel('Tracer Color'):AddColorPicker({Default=Cheat.Colors.Tracer, Flag="color tracer",
+    Callback=function(v) Cheat.Colors.Tracer=v preview:SetTracer(Cheat.Toggles.Tracer,v) end})
+
+end)
 
 	return idx;
 end;
