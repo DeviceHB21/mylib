@@ -3925,12 +3925,21 @@ function idx:AddPlayerPreview(Config)
     -- Put the BillboardGui into its own high DisplayOrder ScreenGui.
     -- Parenting it directly to PlayerGui can put it behind the library's
     -- main ScreenGui, which makes the ESP appear completely invisible.
-    local BillboardScreen = Instance.new("ScreenGui")
-    Billboard.Name = "__NeverLoseESPPreviewBillboardScreen"
+    -- Remove an older preview Billboard before creating a new one.
+    local oldBillboard = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboard")
+    if oldBillboard then
+        oldBillboard:Destroy()
+    end
+
+    -- BillboardGui must be a direct child of PlayerGui.
+    local Billboard = Instance.new("BillboardGui")
+    Billboard.Name = "__NeverLoseESPPreviewBillboard"
+    Billboard.Adornee = Anchor
+    Billboard.AlwaysOnTop = true
     Billboard.ResetOnSpawn = false
-    Billboard.IgnoreGuiInset = true
-    Billboard.DisplayOrder = 1000000
-    Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    Billboard.Size = UDim2.fromOffset(160, 220)
+    Billboard.StudsOffset = Vector3.new(0, 0, 0)
+    Billboard.MaxDistance = 100000
     Billboard.Parent = PlayerGui
 
     local Billboard = Instance.new("BillboardGui")
