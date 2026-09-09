@@ -3855,6 +3855,13 @@ function idx:AddPlayerPreview(Config)
     local height = Config.Height or 150
     local meshId = "rbxassetid://2727038386"
 
+    if PlayerGui then
+        local old = PlayerGui:FindFirstChild("__NeverLoseESPPreviewBillboardScreen")
+        if old then
+            old:Destroy()
+        end
+    end
+
     -- ============================================================
     -- LIVE ESP SOURCE
     -- ============================================================
@@ -3911,17 +3918,29 @@ function idx:AddPlayerPreview(Config)
     Anchor.Size = Vector3.new(0.1, 0.1, 0.1)
     Anchor.Parent = Workspace
 
+    -- Put the BillboardGui into its own high DisplayOrder ScreenGui.
+    -- Parenting it directly to PlayerGui can put it behind the library's
+    -- main ScreenGui, which makes the ESP appear completely invisible.
+    local BillboardScreen = Instance.new("ScreenGui")
+    BillboardScreen.Name = "__NeverLoseESPPreviewBillboardScreen"
+    BillboardScreen.ResetOnSpawn = false
+    BillboardScreen.IgnoreGuiInset = true
+    BillboardScreen.DisplayOrder = 1000000
+    BillboardScreen.ZIndexBehavior = Enum.ZIndexBehavior.Global
+    BillboardScreen.Parent = PlayerGui
+
     local Billboard = Instance.new("BillboardGui")
     Billboard.Name = "__NeverLoseESPPreviewBillboard"
     Billboard.Adornee = Anchor
-    Billboard.Parent = PlayerGui or Container
+    Billboard.Parent = BillboardScreen
     Billboard.AlwaysOnTop = true
     Billboard.LightInfluence = 0
     Billboard.MaxDistance = 100000
     Billboard.Size = UDim2.fromOffset(300, height)
     Billboard.StudsOffset = Vector3.new(0, 0, 0)
-    Billboard.ClipsDescendants = true
+    Billboard.ClipsDescendants = false
     Billboard.Enabled = true
+    Billboard.ZIndexBehavior = Enum.ZIndexBehavior.Global
 
     -- This transparent frame is the actual BillboardGui canvas.
     local Canvas = Instance.new("Frame")
@@ -4399,6 +4418,7 @@ function idx:AddPlayerPreview(Config)
         Anchor.CFrame = CFrame.new(ray.Origin + ray.Direction * 10)
 
         Billboard.Size = UDim2.fromOffset(math.max(1, absSize.X), math.max(1, absSize.Y))
+        Billboard.StudsOffset = Vector3.new(0, 0, 0)
     end
 
     -- ============================================================
