@@ -1281,7 +1281,7 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	InnerFrame.Parent = OptionHandler
 	InnerFrame.AnchorPoint = Vector2.new(0.5, 0)
 	InnerFrame.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
-	InnerFrame.BackgroundTransparency = 0.650
+	InnerFrame.BackgroundTransparency = 0.820
 	InnerFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	InnerFrame.BorderSizePixel = 0
 	InnerFrame.ClipsDescendants = true
@@ -1354,7 +1354,7 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 			})
 
 			NeverLose.PlayAnimate(InnerFrame , SlowyTween , {
-				BackgroundTransparency = 0.650
+				BackgroundTransparency = 0.820
 			})
 
 			NeverLose.PlayAnimate(InnerStroke , SlowyTween , {
@@ -1413,23 +1413,50 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 
 	local ColorPickerLib = {};
 
+	ColorPickerLib.Stops = { { H = 1, S = 1, V = 1, A = 1 } };
+	ColorPickerLib.Active = 1;
+	ColorPickerLib.Gradient = false;
+	ColorPickerLib.Callback = EmptyFunction;
+
+	local function active()
+		return ColorPickerLib.Stops[ColorPickerLib.Active];
+	end;
+
 	local ColorPickerHandler = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local UIStroke = Instance.new("UIStroke")
 	local SaViMap = Instance.new("ImageLabel")
-	local UICorner_2 = Instance.new("UICorner")
+	local SaViCorner = Instance.new("UICorner")
 	local ColorZoneSelection = Instance.new("Frame")
-	local UICorner_3 = Instance.new("UICorner")
-	local UIStroke_2 = Instance.new("UIStroke")
-	local ColorMap = Instance.new("Frame")
-	local UIGradient = Instance.new("UIGradient")
-	local UICorner_4 = Instance.new("UICorner")
-	local ColorMapSelection = Instance.new("Frame")
-	local UIStroke_3 = Instance.new("UIStroke")
-	local UICorner_5 = Instance.new("UICorner")
-	local RGBLabel = Instance.new("TextLabel")
-	local UICorner_6 = Instance.new("UICorner")
+	local ZoneCorner = Instance.new("UICorner")
+	local ZoneStroke = Instance.new("UIStroke")
+	local HueBar = Instance.new("Frame")
+	local HueGradient = Instance.new("UIGradient")
+	local HueCorner = Instance.new("UICorner")
+	local HueSel = Instance.new("Frame")
+	local HueSelStroke = Instance.new("UIStroke")
+	local HueSelCorner = Instance.new("UICorner")
+	local AlphaBar = Instance.new("Frame")
+	local AlphaGradient = Instance.new("UIGradient")
+	local AlphaCorner = Instance.new("UICorner")
+	local AlphaSel = Instance.new("Frame")
+	local AlphaSelStroke = Instance.new("UIStroke")
+	local AlphaSelCorner = Instance.new("UICorner")
+	local HexBox = Instance.new("TextBox")
+	local HexCorner = Instance.new("UICorner")
+	local PercentLabel = Instance.new("TextLabel")
+	local PlusButton = Instance.new("TextLabel")
+	local PlusCorner = Instance.new("UICorner")
+	local StopA = Instance.new("Frame")
+	local StopACorner = Instance.new("UICorner")
+	local StopB = Instance.new("Frame")
+	local StopBCorner = Instance.new("UICorner")
 	local Shadow = NeverLose:CreateShadow(ColorPickerHandler);
+	local RenderSignal = NeverLose:CreateSignal(false);
+	NeverLose:CreateBlurModule(ColorPickerHandler , RenderSignal);
+
+	local SHORT = 202;
+	local TALL = 228;
 
 	ColorPickerHandler.Name = NeverLose.RandomString();
 	ColorPickerHandler.Parent = NeverLose.ScreenGui
@@ -1440,7 +1467,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	ColorPickerHandler.BorderSizePixel = 0
 	ColorPickerHandler.ClipsDescendants = true
 	ColorPickerHandler.Position = UDim2.new(255, 0, 255, 20)
-	ColorPickerHandler.Size = UDim2.new(0, 200, 0, 240)
+	ColorPickerHandler.Size = UDim2.new(0, 170, 0, SHORT)
 	ColorPickerHandler.ZIndex = ZIndex + 125
 
 	NeverLose:AddSignal(ColorPickerHandler:GetPropertyChangedSignal('BackgroundTransparency'):Connect(LPH_NO_VIRTUALIZE(function()
@@ -1469,151 +1496,303 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	SaViMap.Parent = ColorPickerHandler
 	SaViMap.AnchorPoint = Vector2.new(0.5, 0)
 	SaViMap.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
-	SaViMap.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	SaViMap.BorderSizePixel = 0
-	SaViMap.Position = UDim2.new(0.5, 0, 0, 5)
-	SaViMap.Size = UDim2.new(0, 185, 0, 185)
+	SaViMap.Position = UDim2.new(0.5, 0, 0, 8)
+	SaViMap.Size = UDim2.new(1, -16, 0, 130)
 	SaViMap.ZIndex = ZIndex + 126
-	SaViMap.Image = NeverLose.ImageColorMapping -- UNSAFE IMAGE
+	SaViMap.Image = NeverLose.ImageColorMapping
 
-	UICorner_2.CornerRadius = UDim.new(0, 5)
-	UICorner_2.Parent = SaViMap
+	SaViCorner.CornerRadius = UDim.new(0, 6)
+	SaViCorner.Parent = SaViMap
 
 	ColorZoneSelection.Name = NeverLose.RandomString();
 	ColorZoneSelection.Parent = SaViMap
 	ColorZoneSelection.AnchorPoint = Vector2.new(0.5, 0.5)
 	ColorZoneSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	ColorZoneSelection.BackgroundTransparency = 1.000
-	ColorZoneSelection.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ColorZoneSelection.BorderSizePixel = 0
 	ColorZoneSelection.Position = UDim2.new(0.5, 0, 0.5, 0)
-	ColorZoneSelection.Size = UDim2.new(0, 10, 0, 10)
+	ColorZoneSelection.Size = UDim2.new(0, 9, 0, 9)
 	ColorZoneSelection.ZIndex = ZIndex + 127
 
-	UICorner_3.CornerRadius = UDim.new(1, 0)
-	UICorner_3.Parent = ColorZoneSelection
+	ZoneCorner.CornerRadius = UDim.new(1, 0)
+	ZoneCorner.Parent = ColorZoneSelection
 
-	UIStroke_2.Color = Color3.fromRGB(255, 255, 255)
-	UIStroke_2.Parent = ColorZoneSelection
+	ZoneStroke.Color = Color3.fromRGB(255, 255, 255)
+	ZoneStroke.Parent = ColorZoneSelection
 
-	ColorMap.Name = NeverLose.RandomString();
-	ColorMap.Parent = ColorPickerHandler
-	ColorMap.AnchorPoint = Vector2.new(0.5, 0)
-	ColorMap.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ColorMap.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	ColorMap.BorderSizePixel = 0
-	ColorMap.Position = UDim2.new(0.5, 0, 0, 200)
-	ColorMap.Size = UDim2.new(1, -15, 0, 10)
-	ColorMap.ZIndex = ZIndex + 126
+	HueBar.Name = NeverLose.RandomString();
+	HueBar.Parent = ColorPickerHandler
+	HueBar.AnchorPoint = Vector2.new(0.5, 0)
+	HueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	HueBar.BorderSizePixel = 0
+	HueBar.Position = UDim2.new(0.5, 0, 0, 144)
+	HueBar.Size = UDim2.new(1, -16, 0, 9)
+	HueBar.ZIndex = ZIndex + 126
 
-	UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(0.10, Color3.fromRGB(255, 153, 0)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(203, 255, 0)), ColorSequenceKeypoint.new(0.30, Color3.fromRGB(50, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 255, 102)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 101, 255)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(50, 0, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(204, 0, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 153)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))}
-	UIGradient.Parent = ColorMap
+	HueGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(0.10, Color3.fromRGB(255, 153, 0)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(203, 255, 0)), ColorSequenceKeypoint.new(0.30, Color3.fromRGB(50, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 255, 102)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 101, 255)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(50, 0, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(204, 0, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 153)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))}
+	HueGradient.Parent = HueBar
 
-	UICorner_4.CornerRadius = UDim.new(0, 3)
-	UICorner_4.Parent = ColorMap
+	HueCorner.CornerRadius = UDim.new(1, 0)
+	HueCorner.Parent = HueBar
 
-	ColorMapSelection.Name = NeverLose.RandomString();
-	ColorMapSelection.Parent = ColorMap
-	ColorMapSelection.AnchorPoint = Vector2.new(0.5, 0.5)
-	ColorMapSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ColorMapSelection.BackgroundTransparency = 1.000
-	ColorMapSelection.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	ColorMapSelection.BorderSizePixel = 0
-	ColorMapSelection.Position = UDim2.new(0, 0, 0.5, 0)
-	ColorMapSelection.Size = UDim2.new(0, 5, 1, 0)
-	ColorMapSelection.ZIndex = ZIndex + 126
+	HueSel.Name = NeverLose.RandomString();
+	HueSel.Parent = HueBar
+	HueSel.AnchorPoint = Vector2.new(0.5, 0.5)
+	HueSel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	HueSel.BorderSizePixel = 0
+	HueSel.Position = UDim2.new(0, 0, 0.5, 0)
+	HueSel.Size = UDim2.new(0, 5, 1, 2)
+	HueSel.ZIndex = ZIndex + 127
 
-	UIStroke_3.Thickness = 2.000
-	UIStroke_3.Color = Color3.fromRGB(255, 255, 255)
-	UIStroke_3.Parent = ColorMapSelection
+	HueSelStroke.Thickness = 2.000
+	HueSelStroke.Color = Color3.fromRGB(255, 255, 255)
+	HueSelStroke.Parent = HueSel
 
-	UICorner_5.CornerRadius = UDim.new(0, 3)
-	UICorner_5.Parent = ColorMapSelection
+	HueSelCorner.CornerRadius = UDim.new(0, 3)
+	HueSelCorner.Parent = HueSel
 
-	RGBLabel.Name = NeverLose.RandomString();
-	RGBLabel.Parent = ColorPickerHandler
-	RGBLabel.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
-	RGBLabel.BackgroundTransparency = 0.750
-	RGBLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	RGBLabel.BorderSizePixel = 0
-	RGBLabel.Position = UDim2.new(0, 10, 0, 217)
-	RGBLabel.Size = UDim2.new(1, -20, 0, 15)
-	RGBLabel.ZIndex = ZIndex + 127
-	RGBLabel.Font = Enum.Font.GothamBold
-	RGBLabel.Text = "#FFFFFF"
-	RGBLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	RGBLabel.TextSize = 12.000
-	RGBLabel.TextTransparency = 0.400
-	RGBLabel.TextXAlignment = Enum.TextXAlignment.Left
+	AlphaBar.Name = NeverLose.RandomString();
+	AlphaBar.Parent = ColorPickerHandler
+	AlphaBar.AnchorPoint = Vector2.new(0.5, 0)
+	AlphaBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AlphaBar.BorderSizePixel = 0
+	AlphaBar.Position = UDim2.new(0.5, 0, 0, 160)
+	AlphaBar.Size = UDim2.new(1, -16, 0, 9)
+	AlphaBar.ZIndex = ZIndex + 126
 
-	UICorner_6.CornerRadius = UDim.new(0, 4)
-	UICorner_6.Parent = RGBLabel
+	AlphaGradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(1.00, 0.00)}
+	AlphaGradient.Parent = AlphaBar
+
+	AlphaCorner.CornerRadius = UDim.new(1, 0)
+	AlphaCorner.Parent = AlphaBar
+
+	AlphaSel.Name = NeverLose.RandomString();
+	AlphaSel.Parent = AlphaBar
+	AlphaSel.AnchorPoint = Vector2.new(0.5, 0.5)
+	AlphaSel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	AlphaSel.BorderSizePixel = 0
+	AlphaSel.Position = UDim2.new(1, 0, 0.5, 0)
+	AlphaSel.Size = UDim2.new(0, 5, 1, 2)
+	AlphaSel.ZIndex = ZIndex + 127
+
+	AlphaSelStroke.Thickness = 2.000
+	AlphaSelStroke.Color = Color3.fromRGB(255, 255, 255)
+	AlphaSelStroke.Parent = AlphaSel
+
+	AlphaSelCorner.CornerRadius = UDim.new(0, 3)
+	AlphaSelCorner.Parent = AlphaSel
+
+	HexBox.Name = NeverLose.RandomString();
+	HexBox.Parent = ColorPickerHandler
+	HexBox.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
+	HexBox.BackgroundTransparency = 0.400
+	HexBox.BorderSizePixel = 0
+	HexBox.Position = UDim2.new(0, 8, 0, 178)
+	HexBox.Size = UDim2.new(1, -56, 0, 16)
+	HexBox.ZIndex = ZIndex + 127
+	HexBox.Font = Enum.Font.GothamBold
+	HexBox.Text = "#FFFFFF"
+	HexBox.PlaceholderText = "#FFFFFF"
+	HexBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	HexBox.TextSize = 11.000
+	HexBox.TextTransparency = 0.300
+	HexBox.ClearTextOnFocus = false
+	HexBox.TextXAlignment = Enum.TextXAlignment.Center
+
+	HexCorner.CornerRadius = UDim.new(0, 4)
+	HexCorner.Parent = HexBox
+
+	PercentLabel.Name = NeverLose.RandomString();
+	PercentLabel.Parent = ColorPickerHandler
+	PercentLabel.AnchorPoint = Vector2.new(1, 0)
+	PercentLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	PercentLabel.BackgroundTransparency = 1.000
+	PercentLabel.BorderSizePixel = 0
+	PercentLabel.Position = UDim2.new(1, -28, 0, 178)
+	PercentLabel.Size = UDim2.new(0, 28, 0, 16)
+	PercentLabel.ZIndex = ZIndex + 127
+	PercentLabel.Font = Enum.Font.GothamBold
+	PercentLabel.Text = "100%"
+	PercentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	PercentLabel.TextSize = 11.000
+	PercentLabel.TextTransparency = 0.400
+	PercentLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+	PlusButton.Name = NeverLose.RandomString();
+	PlusButton.Parent = ColorPickerHandler
+	PlusButton.AnchorPoint = Vector2.new(1, 0)
+	PlusButton.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
+	PlusButton.BackgroundTransparency = 0.400
+	PlusButton.BorderSizePixel = 0
+	PlusButton.Position = UDim2.new(1, -8, 0, 178)
+	PlusButton.Size = UDim2.new(0, 16, 0, 16)
+	PlusButton.ZIndex = ZIndex + 127
+	PlusButton.FontFace = NeverLose.BuiltInBold
+	PlusButton.Text = "plus-small"
+	PlusButton.TextColor3 = Color3.fromRGB(223, 223, 223)
+	PlusButton.TextSize = 16.000
+	PlusButton.TextTransparency = 0.250
+
+	PlusCorner.CornerRadius = UDim.new(0, 4)
+	PlusCorner.Parent = PlusButton
+
+	StopA.Name = NeverLose.RandomString();
+	StopA.Parent = ColorPickerHandler
+	StopA.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	StopA.BorderSizePixel = 0
+	StopA.Position = UDim2.new(0, 8, 0, 202)
+	StopA.Size = UDim2.new(0, 18, 0, 18)
+	StopA.ZIndex = ZIndex + 127
+	StopA.Visible = false
+
+	StopACorner.CornerRadius = UDim.new(0, 4)
+	StopACorner.Parent = StopA
+
+	StopB.Name = NeverLose.RandomString();
+	StopB.Parent = ColorPickerHandler
+	StopB.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	StopB.BorderSizePixel = 0
+	StopB.Position = UDim2.new(0, 30, 0, 202)
+	StopB.Size = UDim2.new(0, 18, 0, 18)
+	StopB.ZIndex = ZIndex + 127
+	StopB.Visible = false
+
+	StopBCorner.CornerRadius = UDim.new(0, 4)
+	StopBCorner.Parent = StopB
+
+	local function stopColor(st)
+		return Color3.fromHSV(st.H, st.S, st.V);
+	end;
+
+	local function sequence()
+		if ColorPickerLib.Gradient and ColorPickerLib.Stops[2] then
+			return ColorSequence.new(stopColor(ColorPickerLib.Stops[1]), stopColor(ColorPickerLib.Stops[2]));
+		end;
+		return ColorSequence.new(stopColor(ColorPickerLib.Stops[1]));
+	end;
+
+	function ColorPickerLib:Update()
+		local st = active();
+		local col = Color3.fromHSV(st.H, st.S, st.V);
+
+		NeverLose.PlayAnimate(ColorZoneSelection, ManualTween, {
+			Position = UDim2.fromScale(st.S, 1 - st.V)
+		});
+
+		NeverLose.PlayAnimate(SaViMap, ManualTween, {
+			BackgroundColor3 = Color3.fromHSV(st.H, 1, 1)
+		});
+
+		NeverLose.PlayAnimate(HueSel, ManualTween, {
+			Position = UDim2.fromScale(st.H, 0.5)
+		});
+
+		NeverLose.PlayAnimate(AlphaSel, ManualTween, {
+			Position = UDim2.fromScale(st.A, 0.5)
+		});
+
+		AlphaBar.BackgroundColor3 = col;
+
+		StopA.BackgroundColor3 = stopColor(ColorPickerLib.Stops[1]);
+
+		if ColorPickerLib.Stops[2] then
+			StopB.BackgroundColor3 = stopColor(ColorPickerLib.Stops[2]);
+		end;
+
+		HexBox.Text = "#" .. col:ToHex();
+		PercentLabel.Text = tostring(math.floor(st.A * 100 + 0.5)) .. "%";
+
+		ColorPickerLib.Callback(col, st.A, ColorPickerLib.Gradient, sequence());
+	end;
+
+	function ColorPickerLib:SetValue(Color)
+		if typeof(Color) == 'ColorSequence' then
+			local kp = Color.Keypoints;
+			ColorPickerLib.Gradient = #kp > 1;
+			ColorPickerLib.Stops = {};
+			local first = kp[1].Value;
+			local last = kp[#kp].Value;
+			local h1, s1, v1 = first:ToHSV();
+			ColorPickerLib.Stops[1] = { H = h1, S = s1, V = v1, A = 1 };
+			if ColorPickerLib.Gradient then
+				local h2, s2, v2 = last:ToHSV();
+				ColorPickerLib.Stops[2] = { H = h2, S = s2, V = v2, A = 1 };
+			end;
+		elseif typeof(Color) == 'table' then
+			ColorPickerLib.Stops = {};
+			for i, c in ipairs(Color) do
+				if typeof(c) == 'string' then c = Color3.fromHex(c:gsub('#', '')); end;
+				local h, s, v = c:ToHSV();
+				ColorPickerLib.Stops[i] = { H = h, S = s, V = v, A = 1 };
+			end;
+			ColorPickerLib.Gradient = #ColorPickerLib.Stops > 1;
+		else
+			if typeof(Color) == 'string' then
+				Color = Color3.fromHex(Color:gsub('#', ''));
+			end;
+			local h, s, v = Color:ToHSV();
+			ColorPickerLib.Stops = { { H = h, S = s, V = v, A = (active() and active().A) or 1 } };
+			ColorPickerLib.Gradient = false;
+		end;
+
+		ColorPickerLib.Active = 1;
+		ColorPickerLib:RefreshStops();
+		ColorPickerLib:Update();
+	end;
+
+	function ColorPickerLib:RefreshStops()
+		StopA.Visible = ColorPickerLib.Gradient;
+		StopB.Visible = ColorPickerLib.Gradient and ColorPickerLib.Stops[2] ~= nil;
+
+		local grad = ColorPickerLib.Gradient;
+		ColorPickerHandler.Size = UDim2.new(0, 170, 0, grad and TALL or SHORT);
+
+		ZoneStroke.Transparency = (ColorPickerLib.Active == 1) and 0 or 0.4;
+	end;
+
+	function ColorPickerLib:SetActive(i)
+		if ColorPickerLib.Stops[i] then
+			ColorPickerLib.Active = i;
+
+			NeverLose.PlayAnimate(StopA, FastTween, { BackgroundTransparency = (i == 1) and 0 or 0.35 });
+			NeverLose.PlayAnimate(StopB, FastTween, { BackgroundTransparency = (i == 2) and 0 or 0.35 });
+
+			ColorPickerLib:Update();
+		end;
+	end;
 
 	ColorPickerLib.SetRender = LPH_NO_VIRTUALIZE(function(value)
+		RenderSignal:SetValue(value);
+
 		if value then
-			ColorPickerHandler.Position = UDim2.new(0,HandleFrame.AbsolutePosition.X + 20 , 0 ,HandleFrame.AbsolutePosition.Y + 75);
+			ColorPickerHandler.Position = UDim2.new(0, HandleFrame.AbsolutePosition.X + 20, 0, HandleFrame.AbsolutePosition.Y + 75);
 
-			NeverLose.PlayAnimate(ColorPickerHandler,SlowyTween , {
-				BackgroundTransparency = NeverLose.PopupTransparency
-			})
-
-			NeverLose.PlayAnimate(UIStroke,SlowyTween , {
-				Transparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(SaViMap,SlowyTween , {
-				BackgroundTransparency = 0,
-				ImageTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(UIStroke_2,SlowyTween , {
-				Transparency = 0
-			})
-
-			NeverLose.PlayAnimate(ColorMap,SlowyTween , {
-				BackgroundTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(UIStroke_3,SlowyTween , {
-				Transparency = 0
-			})
-
-			NeverLose.PlayAnimate(RGBLabel,SlowyTween , {
-				BackgroundTransparency = 0.750,
-				TextTransparency = 0.400
-			})
+			NeverLose.PlayAnimate(ColorPickerHandler, SlowyTween, { BackgroundTransparency = NeverLose.PopupTransparency })
+			NeverLose.PlayAnimate(UIStroke, SlowyTween, { Transparency = 0.650 })
+			NeverLose.PlayAnimate(SaViMap, SlowyTween, { BackgroundTransparency = 0, ImageTransparency = 0 })
+			NeverLose.PlayAnimate(ZoneStroke, SlowyTween, { Transparency = 0 })
+			NeverLose.PlayAnimate(HueBar, SlowyTween, { BackgroundTransparency = 0 })
+			NeverLose.PlayAnimate(HueSel, SlowyTween, { BackgroundTransparency = 0 })
+			NeverLose.PlayAnimate(AlphaBar, SlowyTween, { BackgroundTransparency = 0 })
+			NeverLose.PlayAnimate(AlphaSel, SlowyTween, { BackgroundTransparency = 0 })
+			NeverLose.PlayAnimate(HexBox, SlowyTween, { BackgroundTransparency = 0.400, TextTransparency = 0.300 })
+			NeverLose.PlayAnimate(PercentLabel, SlowyTween, { TextTransparency = 0.400 })
+			NeverLose.PlayAnimate(PlusButton, SlowyTween, { BackgroundTransparency = 0.400, TextTransparency = 0.250 })
 
 			Shadow:Render(true)
 		else
-			NeverLose.PlayAnimate(ColorPickerHandler,SlowyTween , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UIStroke,SlowyTween , {
-				Transparency = 1
-			})
-
-			NeverLose.PlayAnimate(SaViMap,SlowyTween , {
-				BackgroundTransparency = 1,
-				ImageTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UIStroke_2,SlowyTween , {
-				Transparency = 1
-			})
-
-			NeverLose.PlayAnimate(ColorMap,SlowyTween , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UIStroke_3,SlowyTween , {
-				Transparency = 1
-			})
-
-			NeverLose.PlayAnimate(RGBLabel,SlowyTween , {
-				BackgroundTransparency = 1,
-				TextTransparency = 1
-			})
+			NeverLose.PlayAnimate(ColorPickerHandler, SlowyTween, { BackgroundTransparency = 1 })
+			NeverLose.PlayAnimate(UIStroke, SlowyTween, { Transparency = 1 })
+			NeverLose.PlayAnimate(SaViMap, SlowyTween, { BackgroundTransparency = 1, ImageTransparency = 1 })
+			NeverLose.PlayAnimate(ZoneStroke, SlowyTween, { Transparency = 1 })
+			NeverLose.PlayAnimate(HueBar, SlowyTween, { BackgroundTransparency = 1 })
+			NeverLose.PlayAnimate(HueSel, SlowyTween, { BackgroundTransparency = 1 })
+			NeverLose.PlayAnimate(AlphaBar, SlowyTween, { BackgroundTransparency = 1 })
+			NeverLose.PlayAnimate(AlphaSel, SlowyTween, { BackgroundTransparency = 1 })
+			NeverLose.PlayAnimate(HexBox, SlowyTween, { BackgroundTransparency = 1, TextTransparency = 1 })
+			NeverLose.PlayAnimate(PercentLabel, SlowyTween, { TextTransparency = 1 })
+			NeverLose.PlayAnimate(PlusButton, SlowyTween, { BackgroundTransparency = 1, TextTransparency = 1 })
 
 			Shadow:Render(false)
 		end;
@@ -1621,44 +1800,6 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 
 	ColorPickerLib.SetRender(false);
 	ColorPickerLib.Root = ColorPickerHandler;
-	ColorPickerLib.H = 1;
-	ColorPickerLib.S = 1;
-	ColorPickerLib.V = 1;
-	ColorPickerLib.Callback = EmptyFunction;
-
-	function ColorPickerLib:Update()
-		local RealColor = Color3.fromHSV(ColorPickerLib.H , ColorPickerLib.S , ColorPickerLib.V);
-
-		NeverLose.PlayAnimate(ColorZoneSelection,ManualTween,{
-			Position = UDim2.fromScale(ColorPickerLib.S , 1 - ColorPickerLib.V)
-		});
-
-		NeverLose.PlayAnimate(SaViMap,ManualTween,{
-			BackgroundColor3 = Color3.fromHSV(ColorPickerLib.H , 1 , 1)
-		});
-
-		NeverLose.PlayAnimate(ColorMapSelection,ManualTween,{
-			Position = UDim2.fromScale(ColorPickerLib.H,0.5)
-		});
-
-		RGBLabel.Text = "#"..RealColor:ToHex();
-
-		ColorPickerLib.Callback(RealColor);
-	end;
-
-	function ColorPickerLib:SetValue(Color)
-		if typeof(Color) == 'string' then
-			Color = Color3.fromHex(Color);
-		end;
-
-		local H , S , V = Color:ToHSV();
-
-		ColorPickerLib.H = H;
-		ColorPickerLib.S = S;
-		ColorPickerLib.V = V;
-
-		ColorPickerLib:Update();
-	end;
 
 	ColorPickerLib.IsHold = false;
 
@@ -1674,17 +1815,31 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		end;
 	end));
 
-	NeverLose:AddSignal(ColorMap.InputBegan:Connect(LPH_NO_VIRTUALIZE(function(Input)
+	NeverLose:AddSignal(HueBar.InputBegan:Connect(LPH_NO_VIRTUALIZE(function(Input)
 		if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
 			ColorPickerLib.IsHold = true;
 
 			while (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or ColorPickerLib.IsHold) do task.wait()
-				local ColorY = ColorMap.AbsolutePosition.X
-				local ColorYM = ColorY + ColorMap.AbsoluteSize.X;
-				local Value = math.clamp(Mouse.X, ColorY, ColorYM)
-				local Code = ((Value - ColorY) / (ColorYM - ColorY));
+				local a = HueBar.AbsolutePosition.X;
+				local b = a + HueBar.AbsoluteSize.X;
+				local v = math.clamp(Mouse.X, a, b);
 
-				ColorPickerLib.H = Code;
+				active().H = (v - a) / (b - a);
+				ColorPickerLib:Update();
+			end;
+		end;
+	end)));
+
+	NeverLose:AddSignal(AlphaBar.InputBegan:Connect(LPH_NO_VIRTUALIZE(function(Input)
+		if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
+			ColorPickerLib.IsHold = true;
+
+			while (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or ColorPickerLib.IsHold) do task.wait()
+				local a = AlphaBar.AbsolutePosition.X;
+				local b = a + AlphaBar.AbsoluteSize.X;
+				local v = math.clamp(Mouse.X, a, b);
+
+				active().A = (v - a) / (b - a);
 				ColorPickerLib:Update();
 			end;
 		end;
@@ -1695,18 +1850,78 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			ColorPickerLib.IsHold = true;
 
 			while (UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) or ColorPickerLib.IsHold) do task.wait();
-				local PosX = SaViMap.AbsolutePosition.X;
-				local ScaleX = PosX + SaViMap.AbsoluteSize.X;
-				local Value, PosY = math.clamp(Mouse.X, PosX, ScaleX), SaViMap.AbsolutePosition.Y;
-				local ScaleY = PosY + SaViMap.AbsoluteSize.Y;
-				local Vals = math.clamp(Mouse.Y, PosY, ScaleY);
+				local px = SaViMap.AbsolutePosition.X;
+				local sx = px + SaViMap.AbsoluteSize.X;
+				local vx = math.clamp(Mouse.X, px, sx);
+				local py = SaViMap.AbsolutePosition.Y;
+				local sy = py + SaViMap.AbsoluteSize.Y;
+				local vy = math.clamp(Mouse.Y, py, sy);
 
-				ColorPickerLib.S = (Value - PosX) / (ScaleX - PosX);
-				ColorPickerLib.V = (1 - ((Vals - PosY) / (ScaleY - PosY)));
+				active().S = (vx - px) / (sx - px);
+				active().V = (1 - ((vy - py) / (sy - py)));
 				ColorPickerLib:Update();
 			end
 		end
 	end)));
+
+	HexBox.FocusLost:Connect(LPH_NO_VIRTUALIZE(function()
+		local hx = HexBox.Text:gsub('#', '');
+
+		local ok, col = pcall(function()
+			return Color3.fromHex(hx);
+		end);
+
+		if ok and col then
+			local h, s, v = col:ToHSV();
+			active().H = h;
+			active().S = s;
+			active().V = v;
+		end;
+
+		ColorPickerLib:Update();
+	end));
+
+	NeverLose:CreateInput(StopA, LPH_NO_VIRTUALIZE(function()
+		ColorPickerLib:SetActive(1);
+	end));
+
+	NeverLose:CreateInput(StopB, LPH_NO_VIRTUALIZE(function()
+		ColorPickerLib:SetActive(2);
+	end));
+
+	NeverLose:CreateInput(PlusButton, LPH_NO_VIRTUALIZE(function()
+		if ColorPickerLib.Gradient then
+			ColorPickerLib.Gradient = false;
+			ColorPickerLib.Stops[2] = nil;
+			ColorPickerLib.Active = 1;
+		else
+			ColorPickerLib.Gradient = true;
+			local s1 = ColorPickerLib.Stops[1];
+			ColorPickerLib.Stops[2] = { H = (s1.H + 0.5) % 1, S = s1.S, V = s1.V, A = s1.A };
+		end;
+
+		ColorPickerLib:RefreshStops();
+		ColorPickerLib:SetActive(ColorPickerLib.Active);
+		ColorPickerLib:Update();
+	end));
+
+	function ColorPickerLib:GetValue()
+		return stopColor(ColorPickerLib.Stops[1]);
+	end;
+
+	function ColorPickerLib:GetAlpha()
+		return ColorPickerLib.Stops[1].A;
+	end;
+
+	function ColorPickerLib:IsGradient()
+		return ColorPickerLib.Gradient;
+	end;
+
+	function ColorPickerLib:GetSequence()
+		return sequence();
+	end;
+
+	ColorPickerLib:RefreshStops();
 
 	return ColorPickerLib;
 end;
@@ -2325,6 +2540,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 	function handle:AddColorPicker(Config)
 		Config = NeverLose:ProcessParams(Config , {
 			Default = Color3.fromRGB(255, 255, 255),
+			Gradient = nil,
 			Callback  = EmptyFunction,
 		});
 
@@ -2336,6 +2552,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		local ColorPicker = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
 		local UIStroke = Instance.new("UIStroke")
+		local Gradient = Instance.new("UIGradient")
 		local ImageLabel = Instance.new("ImageLabel")
 		local UICorner_2 = Instance.new("UICorner")
 
@@ -2356,6 +2573,9 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		UIStroke.Color = Color3.fromRGB(45, 48, 58)
 		UIStroke.Parent = ColorPicker
 
+		Gradient.Enabled = false;
+		Gradient.Parent = ColorPicker;
+
 		ImageLabel.Parent = ColorPicker
 		ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -2372,11 +2592,28 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		local BackendM = NeverLose:CreateColorPicker(ColorPicker);
 
-		BackendM:SetValue(Config.Default)
-		BackendM.Callback = function(color)
-			ColorPicker.BackgroundColor3 = color;
+		BackendM.Callback = function(color, alpha, isGradient, seq)
+			if isGradient and seq then
+				Gradient.Color = seq;
+				Gradient.Enabled = true;
+				ColorPicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+			else
+				Gradient.Enabled = false;
+				ColorPicker.BackgroundColor3 = color;
+			end;
+
 			Config.Default = color;
-			Config.Callback(Config.Default);
+			Config.Alpha = alpha;
+			Config.Gradient = isGradient;
+			Config.Sequence = seq;
+
+			Config.Callback(color, alpha, isGradient, seq);
+		end;
+
+		if typeof(Config.Gradient) == 'ColorSequence' or (typeof(Config.Gradient) == 'table') then
+			BackendM:SetValue(Config.Gradient)
+		else
+			BackendM:SetValue(Config.Default)
 		end;
 
 		local signal;
@@ -2437,9 +2674,20 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			return Config.Default;
 		end;
 
+		function ColorPickerLib:GetAlpha()
+			return BackendM:GetAlpha();
+		end;
+
+		function ColorPickerLib:IsGradient()
+			return BackendM:IsGradient();
+		end;
+
+		function ColorPickerLib:GetSequence()
+			return BackendM:GetSequence();
+		end;
+
 		function ColorPickerLib:SetValue(v)
-			Config.Default = v;
-			BackendM:SetValue(Config.Default)
+			BackendM:SetValue(v)
 		end;
 
 		if Config.Flag then
@@ -3948,7 +4196,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		SectionHandler.Parent = SectionFrame
 		SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
 		SectionHandler.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
-		SectionHandler.BackgroundTransparency = 0.500
+		SectionHandler.BackgroundTransparency = 0.820
 		SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		SectionHandler.BorderSizePixel = 0
 		SectionHandler.ClipsDescendants = true
@@ -3986,7 +4234,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		Section.SetRender = LPH_NO_VIRTUALIZE(function(value)
 			if value then
 				NeverLose.PlayAnimate(SectionLabel,SlowyTween,{ TextTransparency = 0.500 })
-				NeverLose.PlayAnimate(SectionHandler,SlowyTween,{ BackgroundTransparency = 0.500 })
+				NeverLose.PlayAnimate(SectionHandler,SlowyTween,{ BackgroundTransparency = 0.820 })
 				NeverLose.PlayAnimate(UIStroke,SlowyTween,{ Transparency = 0.650 })
 			else
 				NeverLose.PlayAnimate(SectionLabel,SlowyTween,{ TextTransparency = 1 })
@@ -5235,7 +5483,7 @@ function NeverLose:CreateWindow(Config)
 					})
 
 					NeverLose.PlayAnimate(SectionHandler,SlowyTween,{
-						BackgroundTransparency = 0.500
+						BackgroundTransparency = 0.820
 					})
 
 					NeverLose.PlayAnimate(UIStroke,SlowyTween,{
@@ -5290,6 +5538,7 @@ function NeverLose:CreateWindow(Config)
 		local UICorner_4 = Instance.new("UICorner")
 
 		local shadow = NeverLose:CreateShadow(ConfigMenu);
+		NeverLose:CreateBlurModule(ConfigMenu , ConfigSignal);
 
 		ConfigLib.SetRender = LPH_NO_VIRTUALIZE(function(value)
 			if value then
