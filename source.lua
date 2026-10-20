@@ -3861,6 +3861,102 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		return UserFrameItem;
 	end;
 
+	function idx:AddSection(Config)
+		Config = NeverLose:ProcessParams(Config , {
+			Name = "SECTION",
+		});
+
+		local SectionFrame = Instance.new("Frame")
+		local SectionLabel = Instance.new("TextLabel")
+		local SectionHandler = Instance.new("Frame")
+		local UIStroke = Instance.new("UIStroke")
+		local UICorner = Instance.new("UICorner")
+		local UIListLayout = Instance.new("UIListLayout")
+
+		SectionFrame.Name = NeverLose.RandomString();
+		SectionFrame.Parent = Frame
+		SectionFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SectionFrame.BackgroundTransparency = 1.000
+		SectionFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionFrame.BorderSizePixel = 0
+		SectionFrame.ClipsDescendants = true
+		SectionFrame.Size = UDim2.new(1, -5, 0, 0)
+		SectionFrame.ZIndex = LayerIndex + 8
+
+		SectionLabel.Name = NeverLose.RandomString();
+		SectionLabel.Parent = SectionFrame
+		SectionLabel.AnchorPoint = Vector2.new(0.5, 0)
+		SectionLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		SectionLabel.BackgroundTransparency = 1.000
+		SectionLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionLabel.BorderSizePixel = 0
+		SectionLabel.Position = UDim2.new(0.5, 0, 0, 0)
+		SectionLabel.Size = UDim2.new(1, -35, 0, 15)
+		SectionLabel.ZIndex = LayerIndex + 9
+		SectionLabel.Font = Enum.Font.GothamMedium
+		SectionLabel.Text = Config.Name
+		SectionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SectionLabel.TextSize = 11.000
+		SectionLabel.TextTransparency = 0.500
+		SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		SectionHandler.Name = NeverLose.RandomString();
+		SectionHandler.Parent = SectionFrame
+		SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
+		SectionHandler.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
+		SectionHandler.BackgroundTransparency = 0.500
+		SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SectionHandler.BorderSizePixel = 0
+		SectionHandler.ClipsDescendants = true
+		SectionHandler.Position = UDim2.new(0.5, 0, 0, 20)
+		SectionHandler.Size = UDim2.new(1, -10, 1, -21)
+		SectionHandler.ZIndex = LayerIndex + 8
+
+		UIStroke.Transparency = 0.650
+		UIStroke.Color = Color3.fromRGB(45, 48, 58)
+		UIStroke.Parent = SectionHandler
+
+		UICorner.CornerRadius = UDim.new(0, 10)
+		UICorner.Parent = SectionHandler
+
+		UIListLayout.Parent = SectionHandler
+		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+		NeverLose:AddSignal(UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(LPH_NO_VIRTUALIZE(function()
+			if UIListLayout.AbsoluteContentSize.Y <= 1 then
+				NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
+					Size = UDim2.new(1, -5, 0, 0)
+				})
+			else
+				NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
+					Size = UDim2.new(1, -5, 0, UIListLayout.AbsoluteContentSize.Y + 19.5)
+				})
+			end;
+		end)));
+
+		local Section = NeverLose:RegisiterItem(SectionHandler , Signel);
+
+		Section.Root = SectionFrame;
+
+		Section.SetRender = LPH_NO_VIRTUALIZE(function(value)
+			if value then
+				NeverLose.PlayAnimate(SectionLabel,SlowyTween,{ TextTransparency = 0.500 })
+				NeverLose.PlayAnimate(SectionHandler,SlowyTween,{ BackgroundTransparency = 0.500 })
+				NeverLose.PlayAnimate(UIStroke,SlowyTween,{ Transparency = 0.650 })
+			else
+				NeverLose.PlayAnimate(SectionLabel,SlowyTween,{ TextTransparency = 1 })
+				NeverLose.PlayAnimate(SectionHandler,SlowyTween,{ BackgroundTransparency = 1 })
+				NeverLose.PlayAnimate(UIStroke,SlowyTween,{ Transparency = 1 })
+			end;
+		end);
+
+		Section.SetRender(Signel:GetValue());
+		Signel:Connect(Section.SetRender);
+
+		return Section;
+	end;
+
 	return idx;
 end;
 
