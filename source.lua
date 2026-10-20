@@ -2166,9 +2166,9 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
-		Toggle.Size = UDim2.new(0, 30, 0, 18)
+		Toggle.Size = UDim2.new(0, 28, 0, 16)
 		Toggle.ZIndex = ZINdex + 13
-		Toggle.LayoutOrder = -(#Handler:GetChildren() + 5);
+		Toggle.LayoutOrder = 999;
 
 		UICorner.CornerRadius = UDim.new(1, 0)
 		UICorner.Parent = Toggle
@@ -2181,7 +2181,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Circle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Circle.BorderSizePixel = 0
 		Circle.Position = UDim2.new(0.300000012, 0, 0.5, 0)
-		Circle.Size = UDim2.new(0, 14, 0, 14)
+		Circle.Size = UDim2.new(0, 12, 0, 12)
 		Circle.ZIndex = ZINdex + 14
 
 		UICorner_2.CornerRadius = UDim.new(1, 0)
