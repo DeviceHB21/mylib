@@ -3402,9 +3402,10 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 	local idx = {};
 	local LayerIndex = Frame.ZIndex;
 
-	function idx:AddLabel(Name: string,Warp: boolean)
+	function idx:AddLabel(Name: string,Warp: boolean,Icon: string)
 		local BasedFrame = Instance.new("Frame")
 		local BasedLabel = Instance.new("TextLabel")
+		local IconLabel;
 		local LineFrame = Instance.new("Frame")
 		local BasedHandler = Instance.new("Frame")
 		local UIListLayout = Instance.new("UIListLayout")
@@ -3468,6 +3469,28 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 
 		UICorner.CornerRadius = UDim.new(0, 10)
 		UICorner.Parent = BasedFrame
+
+		if Icon then
+			IconLabel = Instance.new("TextLabel")
+			IconLabel.Name = NeverLose.RandomString();
+			IconLabel.Parent = BasedFrame
+			IconLabel.BackgroundTransparency = 1.000
+			IconLabel.BorderSizePixel = 0
+			IconLabel.Position = UDim2.new(0, 11, 0, 6)
+			IconLabel.Size = UDim2.new(0, 18, 0, 18)
+			IconLabel.ZIndex = LayerIndex + 9
+			IconLabel.FontFace = NeverLose.BuiltInBold
+			IconLabel.Text = Icon
+			IconLabel.TextColor3 = Color3.fromRGB(223, 223, 223)
+			IconLabel.TextSize = 16.000
+			IconLabel.TextTransparency = BasedLabel.TextTransparency
+
+			BasedLabel.Position = UDim2.new(0, 35, 0, 6)
+
+			NeverLose:AddSignal(BasedLabel:GetPropertyChangedSignal('TextTransparency'):Connect(function()
+				IconLabel.TextTransparency = BasedLabel.TextTransparency;
+			end));
+		end;
 
 		local UpdateWarp = LPH_NO_VIRTUALIZE(function()
 			local size = TextService:GetTextSize(BasedLabel.Text , BasedLabel.TextSize , BasedLabel.Font , Vector2.new(math.huge,math.huge));
