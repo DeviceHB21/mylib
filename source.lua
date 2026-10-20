@@ -1454,9 +1454,9 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 		return ColorSequence.new(cols), NumberSequence.new(alphas);
 	end;
 
-	local top = gradientEnabled and 26 or 0;
-	local W = 200;
-	local HGT = top + 260;
+	local top = gradientEnabled and 24 or 0;
+	local W = 160;
+	local HGT = top + 192;
 
 	local ColorPickerHandler = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
@@ -1532,8 +1532,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	SaViMap.Parent = ColorPickerHandler
 	SaViMap.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
 	SaViMap.BorderSizePixel = 0
-	SaViMap.Position = UDim2.new(0, 10, 0, top + 10)
-	SaViMap.Size = UDim2.new(0, 180, 0, 180)
+	SaViMap.Position = UDim2.new(0, 8, 0, top + 8)
+	SaViMap.Size = UDim2.new(0, 144, 0, 128)
 	SaViMap.ZIndex = ZIndex + 126
 	SaViMap.Image = NeverLose.ImageColorMapping
 
@@ -1560,8 +1560,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	HueBar.Parent = ColorPickerHandler
 	HueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	HueBar.BorderSizePixel = 0
-	HueBar.Position = UDim2.new(0, 10, 0, top + 200)
-	HueBar.Size = UDim2.new(0, 180, 0, 6)
+	HueBar.Position = UDim2.new(0, 8, 0, top + 144)
+	HueBar.Size = UDim2.new(0, 144, 0, 6)
 	HueBar.ZIndex = ZIndex + 126
 
 	HueGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromHSV(0, 1, 1)), ColorSequenceKeypoint.new(0.1667, Color3.fromHSV(0.1667, 1, 1)), ColorSequenceKeypoint.new(0.3333, Color3.fromHSV(0.3333, 1, 1)), ColorSequenceKeypoint.new(0.5, Color3.fromHSV(0.5, 1, 1)), ColorSequenceKeypoint.new(0.6667, Color3.fromHSV(0.6667, 1, 1)), ColorSequenceKeypoint.new(0.8333, Color3.fromHSV(0.8333, 1, 1)), ColorSequenceKeypoint.new(1.00, Color3.fromHSV(1, 1, 1))}
@@ -1590,8 +1590,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	AlphaBar.Parent = ColorPickerHandler
 	AlphaBar.BackgroundColor3 = Color3.fromRGB(82, 82, 89)
 	AlphaBar.BorderSizePixel = 0
-	AlphaBar.Position = UDim2.new(0, 10, 0, top + 214)
-	AlphaBar.Size = UDim2.new(0, 180, 0, 6)
+	AlphaBar.Position = UDim2.new(0, 8, 0, top + 154)
+	AlphaBar.Size = UDim2.new(0, 144, 0, 6)
 	AlphaBar.ZIndex = ZIndex + 126
 
 	AlphaCorner.CornerRadius = UDim.new(0, 3)
@@ -1608,7 +1608,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	CheckerCorner.CornerRadius = UDim.new(0, 3)
 	CheckerCorner.Parent = Checker
 
-	for x = 0, 44 do
+	for x = 0, 36 do
 		for y = 0, 1 do
 			if (x + y) % 2 == 0 then
 				local sq = Instance.new("Frame");
@@ -1655,8 +1655,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	FormatBtn.Parent = ColorPickerHandler
 	FormatBtn.BackgroundTransparency = 1
 	FormatBtn.BorderSizePixel = 0
-	FormatBtn.Position = UDim2.new(0, 10, 0, top + 230)
-	FormatBtn.Size = UDim2.new(0, 28, 0, 20)
+	FormatBtn.Position = UDim2.new(0, 8, 0, top + 166)
+	FormatBtn.Size = UDim2.new(0, 26, 0, 18)
 	FormatBtn.ZIndex = ZIndex + 127
 	FormatBtn.Font = Enum.Font.GothamBold
 	FormatBtn.Text = "HEX"
@@ -1670,8 +1670,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	HexBox.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
 	HexBox.BackgroundTransparency = 0.350
 	HexBox.BorderSizePixel = 0
-	HexBox.Position = UDim2.new(0, 42, 0, top + 230)
-	HexBox.Size = UDim2.new(0, 107, 0, 20)
+	HexBox.Position = UDim2.new(0, 50, 0, top + 166)
+	HexBox.Size = UDim2.new(0, 58, 0, 18)
 	HexBox.ZIndex = ZIndex + 127
 	HexBox.Font = Enum.Font.GothamBold
 	HexBox.Text = "#FFFFFFFF"
@@ -1693,8 +1693,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	Sample.Parent = ColorPickerHandler
 	Sample.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	Sample.BorderSizePixel = 0
-	Sample.Position = UDim2.new(0, 47, 0, top + 235)
-	Sample.Size = UDim2.new(0, 10, 0, 10)
+	Sample.Position = UDim2.new(0, 38, 0, top + 171)
+	Sample.Size = UDim2.new(0, 9, 0, 9)
 	Sample.ZIndex = ZIndex + 128
 
 	SampleCorner.CornerRadius = UDim.new(0, 2)
@@ -1705,8 +1705,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	PercentBox.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
 	PercentBox.BackgroundTransparency = 0.350
 	PercentBox.BorderSizePixel = 0
-	PercentBox.Position = UDim2.new(0, 153, 0, top + 230)
-	PercentBox.Size = UDim2.new(0, 37, 0, 20)
+	PercentBox.Position = UDim2.new(0, 118, 0, top + 166)
+	PercentBox.Size = UDim2.new(0, 34, 0, 18)
 	PercentBox.ZIndex = ZIndex + 127
 	PercentBox.Font = Enum.Font.GothamBold
 	PercentBox.Text = "100%"
@@ -1733,8 +1733,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 		StopBar.Parent = ColorPickerHandler;
 		StopBar.BackgroundTransparency = 1;
 		StopBar.BorderSizePixel = 0;
-		StopBar.Position = UDim2.new(0, 10, 0, 8);
-		StopBar.Size = UDim2.new(0, 180, 0, 18);
+		StopBar.Position = UDim2.new(0, 8, 0, 6);
+		StopBar.Size = UDim2.new(0, 144, 0, 16);
 		StopBar.ZIndex = ZIndex + 127;
 
 		RemoveBtn = Instance.new("TextLabel");
@@ -1744,7 +1744,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 		RemoveBtn.BackgroundTransparency = 0.300;
 		RemoveBtn.BorderSizePixel = 0;
 		RemoveBtn.Position = UDim2.new(0, 0, 0, 0);
-		RemoveBtn.Size = UDim2.new(0, 18, 0, 18);
+		RemoveBtn.Size = UDim2.new(0, 16, 0, 16);
 		RemoveBtn.ZIndex = ZIndex + 128;
 		RemoveBtn.FontFace = NeverLose.BuiltInBold;
 		RemoveBtn.Text = "minus-small";
@@ -1758,8 +1758,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 		AddBtn.BackgroundColor3 = Color3.fromRGB(26, 28, 36);
 		AddBtn.BackgroundTransparency = 0.300;
 		AddBtn.BorderSizePixel = 0;
-		AddBtn.Position = UDim2.new(0, 162, 0, 0);
-		AddBtn.Size = UDim2.new(0, 18, 0, 18);
+		AddBtn.Position = UDim2.new(0, 128, 0, 0);
+		AddBtn.Size = UDim2.new(0, 16, 0, 16);
 		AddBtn.ZIndex = ZIndex + 128;
 		AddBtn.FontFace = NeverLose.BuiltInBold;
 		AddBtn.Text = "plus-small";
@@ -1774,7 +1774,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 			b.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
 			b.BorderSizePixel = 0;
 			b.Position = UDim2.new(0, 0, 0, 3);
-			b.Size = UDim2.new(0, 12, 0, 12);
+			b.Size = UDim2.new(0, 11, 0, 11);
 			b.ZIndex = ZIndex + 128;
 			b.Visible = false;
 			local bc = Instance.new("UICorner"); bc.CornerRadius = UDim.new(0, 3); bc.Parent = b;
@@ -1795,12 +1795,12 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame , gradientEnabled)
 	local function arrangeStops()
 		if not StopBar then return end;
 
-		local startX = (180 - ((#stops - 1) * 22 + 12)) / 2;
+		local startX = (144 - ((#stops - 1) * 20 + 11)) / 2;
 
 		for i, entry in ipairs(stopButtons) do
 			entry.Button.Visible = stops[i] ~= nil;
 			if stops[i] then
-				entry.Button.Position = UDim2.new(0, startX + (i - 1) * 22, 0, 3);
+				entry.Button.Position = UDim2.new(0, startX + (i - 1) * 20, 0, 2);
 			end;
 		end;
 
@@ -2166,9 +2166,9 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
-		Toggle.Size = UDim2.new(0, 28, 0, 16)
+		Toggle.Size = UDim2.new(0, 30, 0, 18)
 		Toggle.ZIndex = ZINdex + 13
-		Toggle.LayoutOrder = 999;
+		Toggle.LayoutOrder = -(#Handler:GetChildren() + 5);
 
 		UICorner.CornerRadius = UDim.new(1, 0)
 		UICorner.Parent = Toggle
@@ -2181,7 +2181,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Circle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Circle.BorderSizePixel = 0
 		Circle.Position = UDim2.new(0.300000012, 0, 0.5, 0)
-		Circle.Size = UDim2.new(0, 12, 0, 12)
+		Circle.Size = UDim2.new(0, 16, 0, 16)
 		Circle.ZIndex = ZINdex + 14
 
 		UICorner_2.CornerRadius = UDim.new(1, 0)
