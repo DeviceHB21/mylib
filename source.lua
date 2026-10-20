@@ -999,6 +999,7 @@ end);
 
 NeverLose.EnabledBlur = true;
 NeverLose.WindowTransparency = 0.12; -- 0 = solid, 1 = fully transparent
+NeverLose.PopupTransparency = 0.15; -- glass level for popups (three-dots / dropdowns / colorpicker)
 NeverLose.BlurModuleParent = workspace.CurrentCamera;
 
 NeverLose.GetCalculatePosition = LPH_NO_VIRTUALIZE(function(planePos, planeNormal, rayOrigin, rayDirection)
@@ -1249,9 +1250,13 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 
 	local OptionHandler = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
-	local UIListLayout = Instance.new("UIListLayout")
 	local UIStroke = Instance.new("UIStroke")
+	local InnerFrame = Instance.new("Frame")
+	local InnerCorner = Instance.new("UICorner")
+	local InnerStroke = Instance.new("UIStroke")
+	local UIListLayout = Instance.new("UIListLayout")
 	local shadow = NeverLose:CreateShadow(OptionHandler);
+	NeverLose:CreateBlurModule(OptionHandler , Window.Signal);
 
 	OptionHandler.Name = NeverLose.RandomString();
 	OptionHandler.Parent = NeverLose.ScreenGui
@@ -1268,28 +1273,49 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	UICorner.CornerRadius = UDim.new(0, 14)
 	UICorner.Parent = OptionHandler
 
-	UIListLayout.Parent = OptionHandler
-	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-	UIStroke.Transparency = 0.650
+	UIStroke.Transparency = 0.800
 	UIStroke.Color = Color3.fromRGB(45, 48, 58)
 	UIStroke.Parent = OptionHandler
 
+	InnerFrame.Name = NeverLose.RandomString();
+	InnerFrame.Parent = OptionHandler
+	InnerFrame.AnchorPoint = Vector2.new(0.5, 0)
+	InnerFrame.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
+	InnerFrame.BackgroundTransparency = 0.650
+	InnerFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	InnerFrame.BorderSizePixel = 0
+	InnerFrame.ClipsDescendants = true
+	InnerFrame.Position = UDim2.new(0.5, 0, 0, 6)
+	InnerFrame.Size = UDim2.new(1, -12, 0, 60)
+	InnerFrame.ZIndex = Zindex + 10
+
+	InnerCorner.CornerRadius = UDim.new(0, 10)
+	InnerCorner.Parent = InnerFrame
+
+	InnerStroke.Transparency = 0.500
+	InnerStroke.Color = Color3.fromRGB(45, 48, 58)
+	InnerStroke.Parent = InnerFrame
+
+	UIListLayout.Parent = InnerFrame
+	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
 	NeverLose:AddSignal(UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(LPH_NO_VIRTUALIZE(function()
+		local h = UIListLayout.AbsoluteContentSize.Y;
+
+		InnerFrame.Size = UDim2.new(1, -12, 0, h);
+
 		NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
-			Size = UDim2.new(0, 220, 0, UIListLayout.AbsoluteContentSize.Y - 1)
+			Size = UDim2.new(0, 220, 0, h + 12)
 		})
 	end)));
 
 	NeverLose:AddSignal(OptionHandler:GetPropertyChangedSignal('BackgroundTransparency'):Connect(LPH_NO_VIRTUALIZE(function()
 		if OptionHandler.BackgroundTransparency > 0.9 then
 			OptionHandler.Visible = false;
-			UIListLayout.Parent = nil;
 			OptionHandler.Parent = nil;
 		else
 			OptionHandler.Visible = true;
-			UIListLayout.Parent = OptionHandler
 
 			if NeverLose.Global3DRenderMode then
 				OptionHandler.Parent = NeverLose.GlobalSurfaceGui;
@@ -1320,11 +1346,19 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 			SetPosition();
 
 			NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
-				BackgroundTransparency = 0.035
+				BackgroundTransparency = NeverLose.PopupTransparency
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 0.800
+			})
+
+			NeverLose.PlayAnimate(InnerFrame , SlowyTween , {
+				BackgroundTransparency = 0.650
+			})
+
+			NeverLose.PlayAnimate(InnerStroke , SlowyTween , {
+				Transparency = 0.500
 			})
 
 			shadow:Render(true);
@@ -1349,6 +1383,14 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 				Transparency = 1
 			})
 
+			NeverLose.PlayAnimate(InnerFrame , SlowyTween , {
+				BackgroundTransparency = 1
+			})
+
+			NeverLose.PlayAnimate(InnerStroke , SlowyTween , {
+				Transparency = 1
+			})
+
 			shadow:Render(false);
 		end;
 	end);
@@ -1356,10 +1398,11 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	Window.SetRender(false);
 	Window.Signal:Connect(Window.SetRender)
 
-	local Payback = NeverLose:RegisiterItem(OptionHandler , Window.Signal);
+	local Payback = NeverLose:RegisiterItem(InnerFrame , Window.Signal);
 
 	Payback.Winbdow = Window;
 	Payback.Root = OptionHandler;
+	Payback.Inner = InnerFrame;
 	Payback.Signal = Window.Signal;
 
 	return Payback;
@@ -1511,7 +1554,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			ColorPickerHandler.Position = UDim2.new(0,HandleFrame.AbsolutePosition.X + 20 , 0 ,HandleFrame.AbsolutePosition.Y + 75);
 
 			NeverLose.PlayAnimate(ColorPickerHandler,SlowyTween , {
-				BackgroundTransparency = 0.035
+				BackgroundTransparency = NeverLose.PopupTransparency
 			})
 
 			NeverLose.PlayAnimate(UIStroke,SlowyTween , {
@@ -2812,6 +2855,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			local DropdownScrollFrame = Instance.new("ScrollingFrame")
 			local UIListLayout = Instance.new("UIListLayout")
 			local Shadow = NeverLose:CreateShadow(DropdownHandler);
+			NeverLose:CreateBlurModule(DropdownHandler , DropdownLib.OpenSignal);
 
 			DropdownHandler.Name = NeverLose.RandomString();
 			DropdownHandler.Parent = NeverLose.ScreenGui;
@@ -2896,7 +2940,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 					SetPosition();
 
 					NeverLose.PlayAnimate(DropdownHandler , SlowyTween , {
-						BackgroundTransparency = 0.035
+						BackgroundTransparency = NeverLose.PopupTransparency
 					})
 
 					if Config.AutoUpdate then
@@ -5252,7 +5296,7 @@ function NeverLose:CreateWindow(Config)
 				ConfigMenu.Position = UDim2.fromOffset(ConfigFrame.AbsolutePosition.X + 110 , ConfigFrame.AbsolutePosition.Y + 96)
 
 				NeverLose.PlayAnimate(ConfigMenu , SlowyTween , {
-					BackgroundTransparency = 0.035,
+					BackgroundTransparency = NeverLose.PopupTransparency,
 					Position = UDim2.fromOffset(ConfigFrame.AbsolutePosition.X + 110 , ConfigFrame.AbsolutePosition.Y + 95)
 				})	
 
@@ -5344,7 +5388,7 @@ function NeverLose:CreateWindow(Config)
 		ConfigMenu.Parent = NeverLose.ScreenGui;
 		ConfigMenu.AnchorPoint = Vector2.new(0.5, 0)
 		ConfigMenu.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
-		ConfigMenu.BackgroundTransparency = 0.035
+		ConfigMenu.BackgroundTransparency = NeverLose.PopupTransparency
 		ConfigMenu.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		ConfigMenu.BorderSizePixel = 0
 		ConfigMenu.ClipsDescendants = true
