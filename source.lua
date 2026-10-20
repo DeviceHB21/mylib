@@ -1416,6 +1416,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	ColorPickerLib.Stops = { { H = 1, S = 1, V = 1, A = 1 } };
 	ColorPickerLib.Active = 1;
 	ColorPickerLib.Gradient = false;
+	ColorPickerLib.Mode = "HEX";
 	ColorPickerLib.Callback = EmptyFunction;
 
 	local function active()
@@ -1718,7 +1719,11 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			StopB.BackgroundColor3 = stopColor(ColorPickerLib.Stops[2]);
 		end;
 
-		HexBox.Text = "#" .. col:ToHex() .. string.format("%02X", math.floor(st.A * 255 + 0.5));
+		if ColorPickerLib.Mode == "RGB" then
+			HexBox.Text = string.format("%d, %d, %d", math.floor(col.R * 255 + 0.5), math.floor(col.G * 255 + 0.5), math.floor(col.B * 255 + 0.5));
+		else
+			HexBox.Text = "#" .. col:ToHex() .. string.format("%02X", math.floor(st.A * 255 + 0.5));
+		end;
 		PercentLabel.Text = tostring(math.floor(st.A * 100 + 0.5)) .. "%";
 
 		ColorPickerLib.Callback(col, st.A, ColorPickerLib.Gradient, sequence());
@@ -1896,21 +1901,36 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	end)));
 
 	HexBox.FocusLost:Connect(LPH_NO_VIRTUALIZE(function()
-		local hx = HexBox.Text:gsub('#', '');
+		if ColorPickerLib.Mode == "RGB" then
+			local nums = {};
 
-		local ok, col = pcall(function()
-			return Color3.fromHex(hx:sub(1, 6));
-		end);
+			for n in string.gmatch(HexBox.Text, "%d+") do
+				table.insert(nums, math.clamp(tonumber(n) or 0, 0, 255));
+			end;
 
-		if ok and col then
-			local h, s, v = col:ToHSV();
-			active().H = h;
-			active().S = s;
-			active().V = v;
+			if #nums >= 3 then
+				local h, s, v = Color3.fromRGB(nums[1], nums[2], nums[3]):ToHSV();
+				active().H = h;
+				active().S = s;
+				active().V = v;
+			end;
+		else
+			local hx = HexBox.Text:gsub('#', '');
 
-			if #hx >= 8 then
-				local av = tonumber(hx:sub(7, 8), 16);
-				if av then active().A = av / 255; end;
+			local ok, col = pcall(function()
+				return Color3.fromHex(hx:sub(1, 6));
+			end);
+
+			if ok and col then
+				local h, s, v = col:ToHSV();
+				active().H = h;
+				active().S = s;
+				active().V = v;
+
+				if #hx >= 8 then
+					local av = tonumber(hx:sub(7, 8), 16);
+					if av then active().A = av / 255; end;
+				end;
 			end;
 		end;
 
@@ -1939,6 +1959,15 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		ColorPickerLib:RefreshStops();
 		ColorPickerLib:SetActive(ColorPickerLib.Active);
 	end));
+
+	local function toggleMode()
+		ColorPickerLib.Mode = (ColorPickerLib.Mode == "HEX") and "RGB" or "HEX";
+		HexName.Text = ColorPickerLib.Mode;
+		ColorPickerLib:Update();
+	end;
+
+	NeverLose:CreateInput(Caret, toggleMode);
+	NeverLose:CreateInput(HexName, toggleMode);
 
 	function ColorPickerLib:GetValue()
 		return stopColor(ColorPickerLib.Stops[1]);
