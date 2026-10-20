@@ -1422,6 +1422,10 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		return ColorPickerLib.Stops[ColorPickerLib.Active];
 	end;
 
+	local W = 160;
+	local SHORT = 180;
+	local TALL = 206;
+
 	local ColorPickerHandler = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local UIStroke = Instance.new("UIStroke")
@@ -1442,11 +1446,11 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	local AlphaSel = Instance.new("Frame")
 	local AlphaSelStroke = Instance.new("UIStroke")
 	local AlphaSelCorner = Instance.new("UICorner")
+	local Caret = Instance.new("TextLabel")
+	local HexName = Instance.new("TextLabel")
 	local HexBox = Instance.new("TextBox")
-	local HexCorner = Instance.new("UICorner")
 	local PercentLabel = Instance.new("TextLabel")
-	local PlusButton = Instance.new("TextLabel")
-	local PlusCorner = Instance.new("UICorner")
+	local GridIcon = Instance.new("TextLabel")
 	local StopA = Instance.new("Frame")
 	local StopACorner = Instance.new("UICorner")
 	local StopB = Instance.new("Frame")
@@ -1455,19 +1459,15 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	local RenderSignal = NeverLose:CreateSignal(false);
 	NeverLose:CreateBlurModule(ColorPickerHandler , RenderSignal);
 
-	local SHORT = 202;
-	local TALL = 228;
-
 	ColorPickerHandler.Name = NeverLose.RandomString();
 	ColorPickerHandler.Parent = NeverLose.ScreenGui
 	ColorPickerHandler.AnchorPoint = Vector2.new(0, 0)
 	ColorPickerHandler.BackgroundColor3 = Color3.fromRGB(23, 23, 25)
 	ColorPickerHandler.BackgroundTransparency = 0
-	ColorPickerHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ColorPickerHandler.BorderSizePixel = 0
 	ColorPickerHandler.ClipsDescendants = true
 	ColorPickerHandler.Position = UDim2.new(255, 0, 255, 20)
-	ColorPickerHandler.Size = UDim2.new(0, 170, 0, SHORT)
+	ColorPickerHandler.Size = UDim2.new(0, W, 0, SHORT)
 	ColorPickerHandler.ZIndex = ZIndex + 125
 
 	NeverLose:AddSignal(ColorPickerHandler:GetPropertyChangedSignal('BackgroundTransparency'):Connect(LPH_NO_VIRTUALIZE(function()
@@ -1498,7 +1498,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	SaViMap.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
 	SaViMap.BorderSizePixel = 0
 	SaViMap.Position = UDim2.new(0.5, 0, 0, 8)
-	SaViMap.Size = UDim2.new(1, -16, 0, 130)
+	SaViMap.Size = UDim2.new(1, -16, 0, 112)
 	SaViMap.ZIndex = ZIndex + 126
 	SaViMap.Image = NeverLose.ImageColorMapping
 
@@ -1526,8 +1526,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	HueBar.AnchorPoint = Vector2.new(0.5, 0)
 	HueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	HueBar.BorderSizePixel = 0
-	HueBar.Position = UDim2.new(0.5, 0, 0, 144)
-	HueBar.Size = UDim2.new(1, -16, 0, 9)
+	HueBar.Position = UDim2.new(0.5, 0, 0, 126)
+	HueBar.Size = UDim2.new(1, -16, 0, 8)
 	HueBar.ZIndex = ZIndex + 126
 
 	HueGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(0.10, Color3.fromRGB(255, 153, 0)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(203, 255, 0)), ColorSequenceKeypoint.new(0.30, Color3.fromRGB(50, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(0, 255, 102)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 101, 255)), ColorSequenceKeypoint.new(0.70, Color3.fromRGB(50, 0, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(204, 0, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 153)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))}
@@ -1542,14 +1542,14 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	HueSel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	HueSel.BorderSizePixel = 0
 	HueSel.Position = UDim2.new(0, 0, 0.5, 0)
-	HueSel.Size = UDim2.new(0, 5, 1, 2)
+	HueSel.Size = UDim2.new(0, 4, 1, 2)
 	HueSel.ZIndex = ZIndex + 127
 
 	HueSelStroke.Thickness = 2.000
 	HueSelStroke.Color = Color3.fromRGB(255, 255, 255)
 	HueSelStroke.Parent = HueSel
 
-	HueSelCorner.CornerRadius = UDim.new(0, 3)
+	HueSelCorner.CornerRadius = UDim.new(0, 2)
 	HueSelCorner.Parent = HueSel
 
 	AlphaBar.Name = NeverLose.RandomString();
@@ -1557,8 +1557,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	AlphaBar.AnchorPoint = Vector2.new(0.5, 0)
 	AlphaBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	AlphaBar.BorderSizePixel = 0
-	AlphaBar.Position = UDim2.new(0.5, 0, 0, 160)
-	AlphaBar.Size = UDim2.new(1, -16, 0, 9)
+	AlphaBar.Position = UDim2.new(0.5, 0, 0, 140)
+	AlphaBar.Size = UDim2.new(1, -16, 0, 8)
 	AlphaBar.ZIndex = ZIndex + 126
 
 	AlphaGradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(1.00, 0.00)}
@@ -1573,44 +1573,66 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	AlphaSel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	AlphaSel.BorderSizePixel = 0
 	AlphaSel.Position = UDim2.new(1, 0, 0.5, 0)
-	AlphaSel.Size = UDim2.new(0, 5, 1, 2)
+	AlphaSel.Size = UDim2.new(0, 4, 1, 2)
 	AlphaSel.ZIndex = ZIndex + 127
 
 	AlphaSelStroke.Thickness = 2.000
 	AlphaSelStroke.Color = Color3.fromRGB(255, 255, 255)
 	AlphaSelStroke.Parent = AlphaSel
 
-	AlphaSelCorner.CornerRadius = UDim.new(0, 3)
+	AlphaSelCorner.CornerRadius = UDim.new(0, 2)
 	AlphaSelCorner.Parent = AlphaSel
+
+	Caret.Name = NeverLose.RandomString();
+	Caret.Parent = ColorPickerHandler
+	Caret.BackgroundTransparency = 1.000
+	Caret.BorderSizePixel = 0
+	Caret.Position = UDim2.new(0, 6, 0, 156)
+	Caret.Size = UDim2.new(0, 12, 0, 16)
+	Caret.ZIndex = ZIndex + 127
+	Caret.FontFace = NeverLose.BuiltInBold
+	Caret.Text = "chevron-small-down"
+	Caret.TextColor3 = Color3.fromRGB(223, 223, 223)
+	Caret.TextSize = 14.000
+	Caret.TextTransparency = 0.400
+
+	HexName.Name = NeverLose.RandomString();
+	HexName.Parent = ColorPickerHandler
+	HexName.BackgroundTransparency = 1.000
+	HexName.BorderSizePixel = 0
+	HexName.Position = UDim2.new(0, 18, 0, 156)
+	HexName.Size = UDim2.new(0, 26, 0, 16)
+	HexName.ZIndex = ZIndex + 127
+	HexName.Font = Enum.Font.GothamBold
+	HexName.Text = "HEX"
+	HexName.TextColor3 = Color3.fromRGB(255, 255, 255)
+	HexName.TextSize = 10.000
+	HexName.TextTransparency = 0.500
+	HexName.TextXAlignment = Enum.TextXAlignment.Left
 
 	HexBox.Name = NeverLose.RandomString();
 	HexBox.Parent = ColorPickerHandler
-	HexBox.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
-	HexBox.BackgroundTransparency = 0.400
+	HexBox.BackgroundTransparency = 1.000
 	HexBox.BorderSizePixel = 0
-	HexBox.Position = UDim2.new(0, 8, 0, 178)
-	HexBox.Size = UDim2.new(1, -56, 0, 16)
+	HexBox.Position = UDim2.new(0, 46, 0, 156)
+	HexBox.Size = UDim2.new(0, 70, 0, 16)
 	HexBox.ZIndex = ZIndex + 127
 	HexBox.Font = Enum.Font.GothamBold
-	HexBox.Text = "#FFFFFF"
-	HexBox.PlaceholderText = "#FFFFFF"
+	HexBox.Text = "#FFFFFFFF"
+	HexBox.PlaceholderText = "#FFFFFFFF"
 	HexBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 	HexBox.TextSize = 11.000
-	HexBox.TextTransparency = 0.300
+	HexBox.TextTransparency = 0.250
 	HexBox.ClearTextOnFocus = false
-	HexBox.TextXAlignment = Enum.TextXAlignment.Center
-
-	HexCorner.CornerRadius = UDim.new(0, 4)
-	HexCorner.Parent = HexBox
+	HexBox.TextXAlignment = Enum.TextXAlignment.Left
 
 	PercentLabel.Name = NeverLose.RandomString();
 	PercentLabel.Parent = ColorPickerHandler
 	PercentLabel.AnchorPoint = Vector2.new(1, 0)
-	PercentLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	PercentLabel.BackgroundTransparency = 1.000
 	PercentLabel.BorderSizePixel = 0
-	PercentLabel.Position = UDim2.new(1, -28, 0, 178)
-	PercentLabel.Size = UDim2.new(0, 28, 0, 16)
+	PercentLabel.Position = UDim2.new(1, -24, 0, 156)
+	PercentLabel.Size = UDim2.new(0, 34, 0, 16)
 	PercentLabel.ZIndex = ZIndex + 127
 	PercentLabel.Font = Enum.Font.GothamBold
 	PercentLabel.Text = "100%"
@@ -1619,30 +1641,26 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	PercentLabel.TextTransparency = 0.400
 	PercentLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-	PlusButton.Name = NeverLose.RandomString();
-	PlusButton.Parent = ColorPickerHandler
-	PlusButton.AnchorPoint = Vector2.new(1, 0)
-	PlusButton.BackgroundColor3 = Color3.fromRGB(26, 28, 36)
-	PlusButton.BackgroundTransparency = 0.400
-	PlusButton.BorderSizePixel = 0
-	PlusButton.Position = UDim2.new(1, -8, 0, 178)
-	PlusButton.Size = UDim2.new(0, 16, 0, 16)
-	PlusButton.ZIndex = ZIndex + 127
-	PlusButton.FontFace = NeverLose.BuiltInBold
-	PlusButton.Text = "plus-small"
-	PlusButton.TextColor3 = Color3.fromRGB(223, 223, 223)
-	PlusButton.TextSize = 16.000
-	PlusButton.TextTransparency = 0.250
-
-	PlusCorner.CornerRadius = UDim.new(0, 4)
-	PlusCorner.Parent = PlusButton
+	GridIcon.Name = NeverLose.RandomString();
+	GridIcon.Parent = ColorPickerHandler
+	GridIcon.AnchorPoint = Vector2.new(1, 0)
+	GridIcon.BackgroundTransparency = 1.000
+	GridIcon.BorderSizePixel = 0
+	GridIcon.Position = UDim2.new(1, -6, 0, 156)
+	GridIcon.Size = UDim2.new(0, 14, 0, 16)
+	GridIcon.ZIndex = ZIndex + 127
+	GridIcon.FontFace = NeverLose.BuiltInBold
+	GridIcon.Text = "six-dots-two-column-grid"
+	GridIcon.TextColor3 = Color3.fromRGB(223, 223, 223)
+	GridIcon.TextSize = 15.000
+	GridIcon.TextTransparency = 0.350
 
 	StopA.Name = NeverLose.RandomString();
 	StopA.Parent = ColorPickerHandler
 	StopA.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	StopA.BorderSizePixel = 0
-	StopA.Position = UDim2.new(0, 8, 0, 202)
-	StopA.Size = UDim2.new(0, 18, 0, 18)
+	StopA.Position = UDim2.new(0, 8, 0, 182)
+	StopA.Size = UDim2.new(0, 16, 0, 16)
 	StopA.ZIndex = ZIndex + 127
 	StopA.Visible = false
 
@@ -1653,8 +1671,8 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 	StopB.Parent = ColorPickerHandler
 	StopB.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	StopB.BorderSizePixel = 0
-	StopB.Position = UDim2.new(0, 30, 0, 202)
-	StopB.Size = UDim2.new(0, 18, 0, 18)
+	StopB.Position = UDim2.new(0, 28, 0, 182)
+	StopB.Size = UDim2.new(0, 16, 0, 16)
 	StopB.ZIndex = ZIndex + 127
 	StopB.Visible = false
 
@@ -1700,10 +1718,32 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			StopB.BackgroundColor3 = stopColor(ColorPickerLib.Stops[2]);
 		end;
 
-		HexBox.Text = "#" .. col:ToHex();
+		HexBox.Text = "#" .. col:ToHex() .. string.format("%02X", math.floor(st.A * 255 + 0.5));
 		PercentLabel.Text = tostring(math.floor(st.A * 100 + 0.5)) .. "%";
 
 		ColorPickerLib.Callback(col, st.A, ColorPickerLib.Gradient, sequence());
+	end;
+
+	function ColorPickerLib:RefreshStops()
+		StopA.Visible = ColorPickerLib.Gradient;
+		StopB.Visible = ColorPickerLib.Gradient and ColorPickerLib.Stops[2] ~= nil;
+
+		ColorPickerHandler.Size = UDim2.new(0, W, 0, ColorPickerLib.Gradient and TALL or SHORT);
+
+		NeverLose.PlayAnimate(GridIcon, FastTween, {
+			TextTransparency = ColorPickerLib.Gradient and 0 or 0.350
+		});
+	end;
+
+	function ColorPickerLib:SetActive(i)
+		if ColorPickerLib.Stops[i] then
+			ColorPickerLib.Active = i;
+
+			NeverLose.PlayAnimate(StopA, FastTween, { BackgroundTransparency = (i == 1) and 0 or 0.45 });
+			NeverLose.PlayAnimate(StopB, FastTween, { BackgroundTransparency = (i == 2) and 0 or 0.45 });
+
+			ColorPickerLib:Update();
+		end;
 	end;
 
 	function ColorPickerLib:SetValue(Color)
@@ -1722,14 +1762,14 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		elseif typeof(Color) == 'table' then
 			ColorPickerLib.Stops = {};
 			for i, c in ipairs(Color) do
-				if typeof(c) == 'string' then c = Color3.fromHex(c:gsub('#', '')); end;
+				if typeof(c) == 'string' then c = Color3.fromHex((c:gsub('#', '')):sub(1, 6)); end;
 				local h, s, v = c:ToHSV();
 				ColorPickerLib.Stops[i] = { H = h, S = s, V = v, A = 1 };
 			end;
 			ColorPickerLib.Gradient = #ColorPickerLib.Stops > 1;
 		else
 			if typeof(Color) == 'string' then
-				Color = Color3.fromHex(Color:gsub('#', ''));
+				Color = Color3.fromHex((Color:gsub('#', '')):sub(1, 6));
 			end;
 			local h, s, v = Color:ToHSV();
 			ColorPickerLib.Stops = { { H = h, S = s, V = v, A = (active() and active().A) or 1 } };
@@ -1738,35 +1778,22 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 
 		ColorPickerLib.Active = 1;
 		ColorPickerLib:RefreshStops();
-		ColorPickerLib:Update();
-	end;
-
-	function ColorPickerLib:RefreshStops()
-		StopA.Visible = ColorPickerLib.Gradient;
-		StopB.Visible = ColorPickerLib.Gradient and ColorPickerLib.Stops[2] ~= nil;
-
-		local grad = ColorPickerLib.Gradient;
-		ColorPickerHandler.Size = UDim2.new(0, 170, 0, grad and TALL or SHORT);
-
-		ZoneStroke.Transparency = (ColorPickerLib.Active == 1) and 0 or 0.4;
-	end;
-
-	function ColorPickerLib:SetActive(i)
-		if ColorPickerLib.Stops[i] then
-			ColorPickerLib.Active = i;
-
-			NeverLose.PlayAnimate(StopA, FastTween, { BackgroundTransparency = (i == 1) and 0 or 0.35 });
-			NeverLose.PlayAnimate(StopB, FastTween, { BackgroundTransparency = (i == 2) and 0 or 0.35 });
-
-			ColorPickerLib:Update();
-		end;
+		ColorPickerLib:SetActive(1);
 	end;
 
 	ColorPickerLib.SetRender = LPH_NO_VIRTUALIZE(function(value)
 		RenderSignal:SetValue(value);
 
 		if value then
-			ColorPickerHandler.Position = UDim2.new(0, HandleFrame.AbsolutePosition.X + 20, 0, HandleFrame.AbsolutePosition.Y + 75);
+			local px = HandleFrame.AbsolutePosition.X;
+			local py = HandleFrame.AbsolutePosition.Y;
+			local x = px - W - 6;
+
+			if x < 6 then
+				x = px + HandleFrame.AbsoluteSize.X + 6;
+			end;
+
+			ColorPickerHandler.Position = UDim2.fromOffset(x, py);
 
 			NeverLose.PlayAnimate(ColorPickerHandler, SlowyTween, { BackgroundTransparency = NeverLose.PopupTransparency })
 			NeverLose.PlayAnimate(UIStroke, SlowyTween, { Transparency = 0.650 })
@@ -1776,9 +1803,11 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			NeverLose.PlayAnimate(HueSel, SlowyTween, { BackgroundTransparency = 0 })
 			NeverLose.PlayAnimate(AlphaBar, SlowyTween, { BackgroundTransparency = 0 })
 			NeverLose.PlayAnimate(AlphaSel, SlowyTween, { BackgroundTransparency = 0 })
-			NeverLose.PlayAnimate(HexBox, SlowyTween, { BackgroundTransparency = 0.400, TextTransparency = 0.300 })
+			NeverLose.PlayAnimate(Caret, SlowyTween, { TextTransparency = 0.400 })
+			NeverLose.PlayAnimate(HexName, SlowyTween, { TextTransparency = 0.500 })
+			NeverLose.PlayAnimate(HexBox, SlowyTween, { TextTransparency = 0.250 })
 			NeverLose.PlayAnimate(PercentLabel, SlowyTween, { TextTransparency = 0.400 })
-			NeverLose.PlayAnimate(PlusButton, SlowyTween, { BackgroundTransparency = 0.400, TextTransparency = 0.250 })
+			NeverLose.PlayAnimate(GridIcon, SlowyTween, { TextTransparency = ColorPickerLib.Gradient and 0 or 0.350 })
 
 			Shadow:Render(true)
 		else
@@ -1790,9 +1819,11 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			NeverLose.PlayAnimate(HueSel, SlowyTween, { BackgroundTransparency = 1 })
 			NeverLose.PlayAnimate(AlphaBar, SlowyTween, { BackgroundTransparency = 1 })
 			NeverLose.PlayAnimate(AlphaSel, SlowyTween, { BackgroundTransparency = 1 })
-			NeverLose.PlayAnimate(HexBox, SlowyTween, { BackgroundTransparency = 1, TextTransparency = 1 })
+			NeverLose.PlayAnimate(Caret, SlowyTween, { TextTransparency = 1 })
+			NeverLose.PlayAnimate(HexName, SlowyTween, { TextTransparency = 1 })
+			NeverLose.PlayAnimate(HexBox, SlowyTween, { TextTransparency = 1 })
 			NeverLose.PlayAnimate(PercentLabel, SlowyTween, { TextTransparency = 1 })
-			NeverLose.PlayAnimate(PlusButton, SlowyTween, { BackgroundTransparency = 1, TextTransparency = 1 })
+			NeverLose.PlayAnimate(GridIcon, SlowyTween, { TextTransparency = 1 })
 
 			Shadow:Render(false)
 		end;
@@ -1868,7 +1899,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		local hx = HexBox.Text:gsub('#', '');
 
 		local ok, col = pcall(function()
-			return Color3.fromHex(hx);
+			return Color3.fromHex(hx:sub(1, 6));
 		end);
 
 		if ok and col then
@@ -1876,6 +1907,11 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 			active().H = h;
 			active().S = s;
 			active().V = v;
+
+			if #hx >= 8 then
+				local av = tonumber(hx:sub(7, 8), 16);
+				if av then active().A = av / 255; end;
+			end;
 		end;
 
 		ColorPickerLib:Update();
@@ -1889,7 +1925,7 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 		ColorPickerLib:SetActive(2);
 	end));
 
-	NeverLose:CreateInput(PlusButton, LPH_NO_VIRTUALIZE(function()
+	NeverLose:CreateInput(GridIcon, LPH_NO_VIRTUALIZE(function()
 		if ColorPickerLib.Gradient then
 			ColorPickerLib.Gradient = false;
 			ColorPickerLib.Stops[2] = nil;
@@ -1902,7 +1938,6 @@ function NeverLose:CreateColorPicker(HandleFrame: Frame)
 
 		ColorPickerLib:RefreshStops();
 		ColorPickerLib:SetActive(ColorPickerLib.Active);
-		ColorPickerLib:Update();
 	end));
 
 	function ColorPickerLib:GetValue()
