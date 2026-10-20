@@ -1,4 +1,3 @@
-
 do
 	local Constant = 'L'..'P'..'H'..'_NO_VIRTUALIZE';
 	getfenv()[Constant] = getfenv()[Constant] or function(f) return f end;
@@ -998,7 +997,8 @@ NeverLose.ProcessParams = LPH_NO_VIRTUALIZE(function(self , Params , Fixed)
 	return k;
 end);
 
-NeverLose.EnabledBlur = false;
+NeverLose.EnabledBlur = true;
+NeverLose.WindowTransparency = 0.12; -- 0 = solid, 1 = fully transparent
 NeverLose.BlurModuleParent = workspace.CurrentCamera;
 
 NeverLose.GetCalculatePosition = LPH_NO_VIRTUALIZE(function(planePos, planeNormal, rayOrigin, rayDirection)
@@ -1265,7 +1265,7 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	OptionHandler.Size = UDim2.new(0, 220, 0, 75)
 	OptionHandler.ZIndex = Zindex + 9
 
-	UICorner.CornerRadius = UDim.new(0, 10)
+	UICorner.CornerRadius = UDim.new(0, 14)
 	UICorner.Parent = OptionHandler
 
 	UIListLayout.Parent = OptionHandler
@@ -1766,7 +1766,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Circle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Circle.BorderSizePixel = 0
 		Circle.Position = UDim2.new(0.300000012, 0, 0.5, 0)
-		Circle.Size = UDim2.new(0, 16, 0, 16)
+		Circle.Size = UDim2.new(0, 14, 0, 14)
 		Circle.ZIndex = ZINdex + 14
 
 		UICorner_2.CornerRadius = UDim.new(1, 0)
@@ -3911,7 +3911,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.Parent = NeverLose.ScreenGui;
 	WindowFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 	WindowFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
-	WindowFrame.BackgroundTransparency = 0
+	WindowFrame.BackgroundTransparency = NeverLose.WindowTransparency
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
 	WindowFrame.ClipsDescendants = false
@@ -3955,7 +3955,7 @@ function NeverLose:CreateWindow(Config)
 	Window.SetRender = LPH_NO_VIRTUALIZE(function(self , value)
 		if value then
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
-				BackgroundTransparency = 0,
+				BackgroundTransparency = NeverLose.WindowTransparency,
 				Size = Window.Size
 			})
 
@@ -4001,7 +4001,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(RightMenuFrame , SlowyTween , {
-				BackgroundTransparency = 0
+				BackgroundTransparency = NeverLose.WindowTransparency
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
@@ -4170,7 +4170,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose.Drag(Frame , WindowFrame , 0.15)
 	end
 
-	UICorner.CornerRadius = UDim.new(0, 12)
+	UICorner.CornerRadius = UDim.new(0, 15)
 	UICorner.Parent = WindowFrame
 
     local WindowStroke = Instance.new("UIStroke")
@@ -4375,7 +4375,7 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
 	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 16)
-	RightMenuFrame.BackgroundTransparency = 0
+	RightMenuFrame.BackgroundTransparency = NeverLose.WindowTransparency
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
@@ -4387,7 +4387,7 @@ function NeverLose:CreateWindow(Config)
 	UIStroke.Color = Color3.fromRGB(45, 48, 58)
 	UIStroke.Parent = RightMenuFrame
 
-	UICorner_4.CornerRadius = UDim.new(0, 13)
+	UICorner_4.CornerRadius = UDim.new(0, 15)
 	UICorner_4.Parent = RightMenuFrame
 
 	RightHeader.Name = NeverLose.RandomString();
